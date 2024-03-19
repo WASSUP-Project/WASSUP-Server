@@ -1,5 +1,5 @@
 # Build
-FROM gradle:7.4-jdk17 as build
+FROM gradle:7.5-jdk17 as build
 
 WORKDIR /app
 
