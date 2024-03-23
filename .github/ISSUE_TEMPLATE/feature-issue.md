@@ -3,7 +3,7 @@ name: Feature Issue
 about: 기능 관련 이슈 템플릿
 title: ''
 labels: ''
-assignees: YehyeokBang
+assignees: dd-jiyun
 
 ---
 
