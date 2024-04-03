@@ -4,8 +4,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
 import net.skhu.wassup.app.admin.api.dto.RequestVerify;
+import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 import net.skhu.wassup.app.admin.service.AdminService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,4 +48,8 @@ public class AdminController {
         return ResponseEntity.status(CREATED).build();
     }
 
+    @PostMapping("login")
+    public ResponseEntity<ResponseLogin> login(@RequestBody RequestLogin requestLogin) {
+        return ResponseEntity.status(OK).body(adminService.login(requestLogin));
+    }
 }

@@ -1,6 +1,8 @@
 package net.skhu.wassup.app.admin.service;
 
+import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
+import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 
 public interface AdminService {
 
@@ -12,6 +14,6 @@ public interface AdminService {
 
     void signup(RequestSignup requestSignup);
 
-    void login();
+    ResponseLogin login(RequestLogin requestLogin);
 
 }
