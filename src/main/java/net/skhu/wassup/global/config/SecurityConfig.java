@@ -26,6 +26,10 @@ public class SecurityConfig {
     @Value("${cors.allowed-origins}")
     private String[] allowedOrigins;
 
+    private static final String[] AUTH_WHITELIST = {
+            "/swagger-ui/**", "/api-docs/**", "/api/admins/**"
+    };
+
     private final TokenProvider tokenProvider;
 
     @Bean
@@ -39,7 +43,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(configurationSource()))
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
-                        authorizeRequests.anyRequest().permitAll())
+                        authorizeRequests
+                                .requestMatchers(AUTH_WHITELIST)
+                                .permitAll()
+                                .anyRequest().authenticated())
                 .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
