@@ -1,0 +1,44 @@
+package net.skhu.wassup.global.config;
+
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class SwaggerConfig {
+
+    @Bean
+    public OpenAPI openAPI() {
+
+        Info info = new Info()
+                .title("Wassup API Document")
+                .version("v0.0.1")
+                .description("Wassup API 명세");
+
+        String authName = "Token";
+
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(authName);
+        Components components = new Components()
+                .addSecuritySchemes(
+                        authName,
+                        new SecurityScheme()
+                                .name(authName)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("Bearer")
+                                .bearerFormat("JWT")
+                                .description("엑세스 토큰을 입력해주세요.")
+                );
+
+        return new OpenAPI()
+                .addServersItem(new Server().url("http://localhost:8080").description("Local Server"))
+                .addSecurityItem(securityRequirement)
+                .components(components)
+                .info(info);
+    }
+
+}
