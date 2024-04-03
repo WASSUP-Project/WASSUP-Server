@@ -1,11 +1,14 @@
 package net.skhu.wassup.app.admin.service;
 
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.admin.api.dto.RequestLogin;
+import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 import net.skhu.wassup.app.admin.domain.Admin;
 import net.skhu.wassup.app.admin.domain.AdminRepository;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
 import net.skhu.wassup.app.certification.CertificationCodeService;
 import net.skhu.wassup.app.encryption.EncryptionService;
+import net.skhu.wassup.global.auth.jwt.TokenProvider;
 import net.skhu.wassup.global.message.SMSMessageSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,8 @@ public class AdminServiceImpl implements AdminService {
 
     private final EncryptionService encryptionService;
 
+    private final TokenProvider tokenProvider;
+
     @Override
     public boolean isDuplicateId(String adminId) {
         return adminRepository.existsByAdminId(adminId);
@@ -31,7 +36,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void certification(String phoneNumber) {
         String certificationCode = certificationCodeService.getCertificationCode(phoneNumber);
-        System.out.println("인증번호: " + certificationCode);
         smsMessageSender.send(phoneNumber, "Wassup 인증번호", certificationCode);
     }
 
@@ -59,8 +63,34 @@ public class AdminServiceImpl implements AdminService {
                 .build());
     }
 
+    private Admin findCertificatedAdmin(RequestLogin requestLogin) {
+        Admin admin = adminRepository.findByAdminId(requestLogin.adminId());
+
+        if (ObjectUtils.isEmpty(admin)) {
+            throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
+        }
+
+        if (!encryptionService.isMatch(requestLogin.password(), admin.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return admin;
+    }
+
+    private ResponseLogin createToken(Admin admin) {
+        String token = tokenProvider.createToken(admin.getId());
+
+        return ResponseLogin.builder()
+                .token(token)
+                .build();
+    }
+
     @Override
-    public void login() {
+    @Transactional
+    public ResponseLogin login(RequestLogin requestLogin) {
+        Admin admin = findCertificatedAdmin(requestLogin);
+
+        return createToken(admin);
     }
 
 }

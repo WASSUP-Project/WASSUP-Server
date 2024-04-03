@@ -19,10 +19,6 @@ public record RequestSignup(
 
         @NotBlank(message = "전화번호를 입력해주세요.")
         @Pattern(regexp = "010[0-9]{8}", message = "전화번호는 형식에 맞게 11자리 숫자로 입력해주세요.")
-        String phoneNumber,
-
-        @NotBlank(message = "인증 번호를 입력해주세요.")
-        @Size(min = 6, max = 6, message = "인증 번호는 6자리로 입력해주세요.")
-        String certificationNumber) {
+        String phoneNumber) {
 
 }
