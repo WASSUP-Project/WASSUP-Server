@@ -65,7 +65,7 @@ public class GroupController {
             summary = "그룹 생성",
             description = "그룹을 생성합니다."
     )
-    public ResponseEntity<ResponseGroup> createGroup(Principal principal, @RequestBody RequestGroup requestGroup) {
+    public ResponseEntity<Void> createGroup(Principal principal, @RequestBody RequestGroup requestGroup) {
         Long id = Long.parseLong(principal.getName());
         groupService.save(id, requestGroup);
         return ResponseEntity.status(CREATED).build();
@@ -85,7 +85,7 @@ public class GroupController {
             summary = "그룹 정보 수정",
             description = "그룹 정보를 수정합니다."
     )
-    public ResponseEntity<ResponseGroup> updateGroup(Principal principal,
+    public ResponseEntity<Void> updateGroup(Principal principal,
                                                      @RequestBody RequestUpdateGroup requestUpdateGroup,
                                                      @RequestParam Long groupId) {
         Long id = Long.parseLong(principal.getName());
