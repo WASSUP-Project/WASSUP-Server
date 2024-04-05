@@ -64,7 +64,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     private Admin findCertificatedAdmin(RequestLogin requestLogin) {
-        Admin admin = adminRepository.findByAdminId(requestLogin.adminId());
+        Admin admin = adminRepository.findByAdminId(requestLogin.adminId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이디입니다."));
 
         if (ObjectUtils.isEmpty(admin)) {
             throw new IllegalArgumentException("존재하지 않는 아이디입니다.");
