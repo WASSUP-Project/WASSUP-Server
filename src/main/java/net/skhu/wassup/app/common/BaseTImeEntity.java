@@ -16,7 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @NoArgsConstructor(access = PROTECTED)
 @EntityListeners(value = {AuditingEntityListener.class})
-public class BaseTImeEntity {
+public class BaseTimeEntity {
 
     @Column(name = "create_date", nullable = false, updatable = false)
     @CreatedDate
