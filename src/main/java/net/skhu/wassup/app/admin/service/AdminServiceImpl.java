@@ -2,6 +2,7 @@ package net.skhu.wassup.app.admin.service;
 
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
+import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 import net.skhu.wassup.app.admin.domain.Admin;
 import net.skhu.wassup.app.admin.domain.AdminRepository;
@@ -92,6 +93,19 @@ public class AdminServiceImpl implements AdminService {
         Admin admin = findCertificatedAdmin(requestLogin);
 
         return createToken(admin);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseAdmin getAdmin(Long id) {
+        Admin admin = adminRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자입니다."));
+
+        return ResponseAdmin.builder()
+                .id(admin.getId())
+                .name(admin.getName())
+                .phoneNumber(admin.getPhoneNumber())
+                .build();
     }
 
 }

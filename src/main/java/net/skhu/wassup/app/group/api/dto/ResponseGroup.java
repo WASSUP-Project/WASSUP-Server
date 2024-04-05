@@ -25,6 +25,7 @@ public record ResponseGroup(
 
         @Schema(description = "그룹 이미지 URL")
         String imageUrl) {
+
     public static ResponseGroup fromGroup(Group group) {
         return new ResponseGroup(
                 group.getName(),

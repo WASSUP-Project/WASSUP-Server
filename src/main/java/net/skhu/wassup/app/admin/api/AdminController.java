@@ -5,13 +5,16 @@ import static org.springframework.http.HttpStatus.OK;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.security.Principal;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
 import net.skhu.wassup.app.admin.api.dto.RequestVerify;
+import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 import net.skhu.wassup.app.admin.service.AdminService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,8 +55,8 @@ public class AdminController {
             summary = "아이디 중복 확인",
             description = "아이디 중복을 확인합니다."
     )
-    public ResponseEntity<Boolean> isDuplicateId(@RequestParam String id) {
-        return ResponseEntity.status(OK).body(adminService.isDuplicateId(id));
+    public ResponseEntity<Boolean> isDuplicateId(@RequestParam String adminId) {
+        return ResponseEntity.status(OK).body(adminService.isDuplicateId(adminId));
     }
 
     @PostMapping("signup")
@@ -74,5 +77,15 @@ public class AdminController {
     )
     public ResponseEntity<ResponseLogin> login(@RequestBody RequestLogin requestLogin) {
         return ResponseEntity.status(OK).body(adminService.login(requestLogin));
+    }
+
+    @GetMapping
+    @Operation(
+            summary = "관리자 조회",
+            description = "관리자 정보를 조회합니다."
+    )
+    public ResponseEntity<ResponseAdmin> getAdmin(Principal principal) {
+        Long id = Long.parseLong(principal.getName());
+        return ResponseEntity.status(OK).body(adminService.getAdmin(id));
     }
 }
