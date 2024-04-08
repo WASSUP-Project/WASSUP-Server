@@ -1,5 +1,11 @@
 package net.skhu.wassup.app.group.service;
 
+import static net.skhu.wassup.global.error.ErrorCode.INVALID_EMAIL;
+import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_ADMIN;
+import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
+import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_CERTIFICATION_CODE;
+import static net.skhu.wassup.global.error.ErrorCode.UNAUTHORIZED_ADMIN;
+
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.domain.Admin;
 import net.skhu.wassup.app.admin.domain.AdminRepository;
@@ -9,6 +15,7 @@ import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
+import net.skhu.wassup.global.error.exception.CustomException;
 import net.skhu.wassup.global.message.EmailMessageSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +44,7 @@ public class GroupServiceImpl implements GroupService {
         String certificationCode = certificationCodeService.getCertificationCode(email);
 
         if (!email.matches(EMAIL_REGEX)) {
-            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+            throw new CustomException(INVALID_EMAIL);
         }
 
         emailMessageSender.send(email, "Wassup 인증번호", certificationCode);
@@ -48,7 +55,7 @@ public class GroupServiceImpl implements GroupService {
         String certificationCode = certificationCodeService.getCertificationCode(email);
 
         if (!certificationCode.equals(inputCode)) {
-            throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+            throw new CustomException(NOT_MATCH_CERTIFICATION_CODE);
         }
 
         certificationCodeService.deleteCertificationCode(email);
@@ -60,7 +67,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void save(Long adminId, RequestGroup requestGroup) {
         Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new IllegalArgumentException("관리자 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
 
         groupRepository.save(Group.builder()
                 .admin(admin)
@@ -80,7 +87,7 @@ public class GroupServiceImpl implements GroupService {
         return groupRepository.findAll().stream()
                 .map(ResponseGroup::fromGroup)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("그룹 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
 
     }
 
@@ -88,10 +95,10 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void updateGroup(Long id, RequestUpdateGroup requestUpdateGroup, Long groupId) {
         Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
 
         if (!group.getAdmin().getId().equals(id)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
+            throw new CustomException(UNAUTHORIZED_ADMIN);
         }
 
         group.update(requestUpdateGroup);
@@ -101,10 +108,10 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void deleteGroup(Long id, Long groupId) {
         Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new IllegalArgumentException("그룹 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
 
         if (!group.getAdmin().getId().equals(id)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
+            throw new CustomException(UNAUTHORIZED_ADMIN);
         }
 
         groupRepository.deleteById(groupId);
