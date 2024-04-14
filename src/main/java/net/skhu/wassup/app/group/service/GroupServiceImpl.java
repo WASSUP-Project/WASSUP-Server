@@ -18,7 +18,6 @@ import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
 import net.skhu.wassup.global.error.exception.CustomException;
 import net.skhu.wassup.global.message.EmailMessageSender;
-import net.skhu.wassup.global.message.SMSMessageSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,5 +122,5 @@ public class GroupServiceImpl implements GroupService {
 
         groupRepository.deleteById(groupId);
     }
-    
+
 }

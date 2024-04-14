@@ -55,7 +55,7 @@ public class Group extends BaseTimeEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "group_unique_code")
+    @Column(name = "group_unique_code", unique = true, nullable = false)
     private String uniqueCode;
 
     @JsonIgnore
