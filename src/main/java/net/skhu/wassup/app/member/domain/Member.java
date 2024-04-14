@@ -56,4 +56,9 @@ public class Member extends BaseTimeEntity {
         this.specifics = specifics;
         this.joinStatus = joinStatus;
     }
+
+    public void accept() {
+        this.joinStatus = JoinStatus.ACCEPTED;
+    }
+
 }

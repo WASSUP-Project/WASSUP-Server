@@ -1,9 +1,15 @@
 package net.skhu.wassup.app.group.service;
 
+import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.group.api.dto.RequestInviteGroup;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
+import net.skhu.wassup.app.member.domain.JoinStatus;
+import net.skhu.wassup.app.member.domain.Member;
+import net.skhu.wassup.app.member.domain.MemberRepository;
 import net.skhu.wassup.global.error.ErrorCode;
 import net.skhu.wassup.global.error.exception.CustomException;
 import net.skhu.wassup.global.message.SMSMessageSender;
@@ -21,7 +27,10 @@ public class GroupInviteServiceImpl implements GroupInviteService {
 
     private final GroupRepository groupRepository;
 
+    private final MemberRepository memberRepository;
+
     @Override
+    @Transactional
     public void send(Long groupId, RequestInviteGroup requestInviteGroup) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_GROUP));
@@ -35,13 +44,40 @@ public class GroupInviteServiceImpl implements GroupInviteService {
     }
 
     @Override
-    public void accept() {
+    @Transactional
+    public void accept(Long id, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
 
+        Long groupId = member.getGroup().getId();
+        currentUserIsAdmin(id, groupId);
+
+        member.accept();
+
+        log.info("그룹 초대 수락: Member={}", memberId);
     }
 
     @Override
-    public void reject() {
+    @Transactional
+    public void reject(Long id, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
 
+        Long groupId = member.getGroup().getId();
+        currentUserIsAdmin(id, groupId);
+
+        memberRepository.deleteById(memberId);
+
+        log.info("그룹 초대 거절: Member={}", memberId);
+    }
+
+    private void currentUserIsAdmin(Long id, Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_GROUP));
+
+        if (!group.getAdmin().getId().equals(id)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ADMIN);
+        }
     }
 
 }
