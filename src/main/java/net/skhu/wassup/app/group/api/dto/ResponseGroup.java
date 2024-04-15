@@ -2,7 +2,6 @@ package net.skhu.wassup.app.group.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import net.skhu.wassup.app.group.domain.Group;
 
 @Builder
 @Schema(description = "그룹 조회")
@@ -25,16 +24,5 @@ public record ResponseGroup(
 
         @Schema(description = "그룹 이미지 URL")
         String imageUrl) {
-
-    public static ResponseGroup fromGroup(Group group) {
-        return new ResponseGroup(
-                group.getName(),
-                group.getDescription(),
-                group.getAddress(),
-                group.getBusinessNumber(),
-                group.getEmail(),
-                group.getImageUrl()
-        );
-    }
 
 }

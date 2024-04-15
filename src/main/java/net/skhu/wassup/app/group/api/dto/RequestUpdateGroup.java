@@ -6,10 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 @Schema(description = "그룹 수정 요청")
 public record RequestUpdateGroup(
 
-        @Schema(description = "그룹 이름")
-        @NotBlank(message = "그룹 이름을 입력해주세요.")
-        String name,
-
         @Schema(description = "그룹 설명")
         @NotBlank(message = "그룹을 설명해주세요.")
         String description,
