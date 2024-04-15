@@ -2,13 +2,16 @@ package net.skhu.wassup.app.group.domain;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +19,7 @@ import lombok.NoArgsConstructor;
 import net.skhu.wassup.app.admin.domain.Admin;
 import net.skhu.wassup.app.common.BaseTimeEntity;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
+import net.skhu.wassup.app.member.domain.Member;
 
 @Entity
 @Getter
@@ -51,6 +55,13 @@ public class Group extends BaseTimeEntity {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "group_unique_code", unique = true, nullable = false)
+    private String uniqueCode;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "group")
+    private List<Member> members;
+
     public void update(RequestUpdateGroup requestUpdateGroup) {
         this.name = requestUpdateGroup.name();
         this.description = requestUpdateGroup.description();
@@ -60,7 +71,7 @@ public class Group extends BaseTimeEntity {
     }
 
     @Builder
-    public Group(Admin admin, String name, String description, String address, String businessNumber, String email, String imageUrl) {
+    public Group(Admin admin, String name, String description, String address, String businessNumber, String email, String imageUrl, String uniqueCode) {
         this.admin = admin;
         this.name = name;
         this.description = description;
@@ -68,6 +79,7 @@ public class Group extends BaseTimeEntity {
         this.businessNumber = businessNumber;
         this.email = email;
         this.imageUrl = imageUrl;
+        this.uniqueCode = uniqueCode;
     }
 
 }

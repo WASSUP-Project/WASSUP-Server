@@ -19,4 +19,5 @@ public interface GroupService {
     void updateGroup(Long adminId, RequestUpdateGroup requestUpdateGroup, Long groupId);
 
     void deleteGroup(Long adminId, Long groupId);
+
 }

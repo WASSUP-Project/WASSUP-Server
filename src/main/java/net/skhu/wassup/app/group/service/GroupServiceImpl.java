@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.domain.Admin;
 import net.skhu.wassup.app.admin.domain.AdminRepository;
 import net.skhu.wassup.app.certification.CertificationCodeService;
+import net.skhu.wassup.app.certification.GroupUniqueCodeService;
 import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
@@ -29,6 +30,8 @@ public class GroupServiceImpl implements GroupService {
     private final GroupRepository groupRepository;
 
     private final CertificationCodeService certificationCodeService;
+
+    private final GroupUniqueCodeService groupUniqueCodeService;
 
     private final EmailMessageSender emailMessageSender;
 
@@ -69,6 +72,8 @@ public class GroupServiceImpl implements GroupService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
 
+        String uniqueCode = groupUniqueCodeService.getGroupUniqueCode();
+
         groupRepository.save(Group.builder()
                 .admin(admin)
                 .name(requestGroup.groupName())
@@ -77,6 +82,7 @@ public class GroupServiceImpl implements GroupService {
                 .businessNumber(requestGroup.businessNumber())
                 .email(requestGroup.email())
                 .imageUrl(requestGroup.imageUrl())
+                .uniqueCode(uniqueCode)
                 .build());
     }
 
@@ -116,4 +122,5 @@ public class GroupServiceImpl implements GroupService {
 
         groupRepository.deleteById(groupId);
     }
+
 }
