@@ -6,6 +6,8 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_CERTIFICATION_CODE;
 import static net.skhu.wassup.global.error.ErrorCode.UNAUTHORIZED_ADMIN;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.domain.Admin;
 import net.skhu.wassup.app.admin.domain.AdminRepository;
@@ -88,13 +90,33 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseGroup getGroup() {
+    public ResponseGroup getGroup(Long id) {
+        return groupRepository.findById(id)
+                .map(group -> ResponseGroup.builder()
+                        .groupName(group.getName())
+                        .groupDescription(group.getDescription())
+                        .address(group.getAddress())
+                        .businessNumber(group.getBusinessNumber())
+                        .email(group.getEmail())
+                        .imageUrl(group.getImageUrl())
+                        .build())
+                .orElseThrow(() -> new IllegalArgumentException("그룹 정보가 존재하지 않습니다."));
+    }
 
-        return groupRepository.findAll().stream()
-                .map(ResponseGroup::fromGroup)
-                .findFirst()
-                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
-
+    @Override
+    @Transactional
+    public List<ResponseGroup> getMyGroup(Long id) {
+        return groupRepository.findAllByAdminId(id)
+                .stream()
+                .map(group -> ResponseGroup.builder()
+                        .groupName(group.getName())
+                        .groupDescription(group.getDescription())
+                        .address(group.getAddress())
+                        .businessNumber(group.getBusinessNumber())
+                        .email(group.getEmail())
+                        .imageUrl(group.getImageUrl())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Override

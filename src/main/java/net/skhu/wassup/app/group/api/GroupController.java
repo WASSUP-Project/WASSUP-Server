@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.OK;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
@@ -76,8 +77,18 @@ public class GroupController {
             summary = "그룹 정보 조회",
             description = "그룹 정보를 조회합니다."
     )
-    public ResponseEntity<ResponseGroup> getGroup() {
-        return ResponseEntity.status(OK).body(groupService.getGroup());
+    public ResponseEntity<ResponseGroup> getGroup(@RequestParam Long id) {
+        return ResponseEntity.status(OK).body(groupService.getGroup(id));
+    }
+
+    @GetMapping("my")
+    @Operation(
+            summary = "내 그룹 정보 조회",
+            description = "내 그룹 정보를 조회합니다."
+    )
+    public ResponseEntity<List<ResponseGroup>> getMyGroup(Principal principal) {
+        Long id = Long.parseLong(principal.getName());
+        return ResponseEntity.status(OK).body(groupService.getMyGroup(id));
     }
 
     @PutMapping
@@ -87,9 +98,9 @@ public class GroupController {
     )
     public ResponseEntity<Void> updateGroup(Principal principal,
                                                      @RequestBody RequestUpdateGroup requestUpdateGroup,
-                                                     @RequestParam Long groupId) {
-        Long id = Long.parseLong(principal.getName());
-        groupService.updateGroup(id, requestUpdateGroup, groupId);
+                                                     @RequestParam Long id) {
+        Long adminId = Long.parseLong(principal.getName());
+        groupService.updateGroup(adminId, requestUpdateGroup, id);
         return ResponseEntity.status(OK).build();
     }
 
@@ -98,9 +109,9 @@ public class GroupController {
             summary = "그룹 삭제",
             description = "그룹을 삭제합니다."
     )
-    public ResponseEntity<Void> deleteGroup(Principal principal, @RequestParam Long groupId) {
-        Long id = Long.parseLong(principal.getName());
-        groupService.deleteGroup(id, groupId);
+    public ResponseEntity<Void> deleteGroup(Principal principal, @RequestParam Long id) {
+        Long adminId = Long.parseLong(principal.getName());
+        groupService.deleteGroup(adminId, id);
         return ResponseEntity.status(OK).build();
     }
 
