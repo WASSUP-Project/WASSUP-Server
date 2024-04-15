@@ -52,7 +52,6 @@ public class Group extends BaseTimeEntity {
     private String imageUrl;
 
     public void update(RequestUpdateGroup requestUpdateGroup) {
-        this.name = requestUpdateGroup.name();
         this.description = requestUpdateGroup.description();
         this.address = requestUpdateGroup.address();
         this.businessNumber = requestUpdateGroup.businessNumber();
