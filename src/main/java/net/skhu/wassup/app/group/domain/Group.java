@@ -63,10 +63,10 @@ public class Group extends BaseTimeEntity {
     private List<Member> members;
 
     public void update(RequestUpdateGroup requestUpdateGroup) {
-        this.description = requestUpdateGroup.description();
-        this.address = requestUpdateGroup.address();
-        this.businessNumber = requestUpdateGroup.businessNumber();
-        this.imageUrl = requestUpdateGroup.imageUrl();
+        this.description = (requestUpdateGroup.description() != null) ? requestUpdateGroup.description() : this.description;
+        this.address = (requestUpdateGroup.address() != null) ? requestUpdateGroup.address() : this.address;
+        this.businessNumber = (requestUpdateGroup.businessNumber() != null) ? requestUpdateGroup.businessNumber() : this.businessNumber;
+        this.imageUrl = (requestUpdateGroup.imageUrl() != null) ? requestUpdateGroup.imageUrl() : this.imageUrl;
     }
 
     @Builder
