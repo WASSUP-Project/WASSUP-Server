@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 
 @Schema(description = "회원가입 요청")
 public record RequestSignup(
+
         @Schema(description = "아이디를 5자 이상 20자 이하로 입력해주세요.")
         @NotBlank(message = "아이디를 입력해주세요.")
         @Size(min = 5, max = 20, message = "아이디는 5자 이상 20자 이하로 입력해주세요.")

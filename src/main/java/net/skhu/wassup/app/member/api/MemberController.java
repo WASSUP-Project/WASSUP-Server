@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 @Tag(name = "Member", description = "회원 관리 API")
 public class MemberController {
@@ -25,4 +25,5 @@ public class MemberController {
         memberService.save(requestMember);
         return ResponseEntity.status(CREATED).build();
     }
+
 }

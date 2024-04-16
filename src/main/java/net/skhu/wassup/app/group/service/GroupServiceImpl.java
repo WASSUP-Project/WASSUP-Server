@@ -106,7 +106,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<ResponseMyGroup> getMyGroup(Long id) {
         return groupRepository.findAllByAdminId(id).stream()
                 .map(group -> {

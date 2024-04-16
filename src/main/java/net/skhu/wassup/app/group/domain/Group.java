@@ -1,5 +1,6 @@
 package net.skhu.wassup.app.group.domain;
 
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -59,7 +60,7 @@ public class Group extends BaseTimeEntity {
     private String uniqueCode;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", fetch = EAGER)
     private List<Member> members;
 
     public void update(RequestUpdateGroup requestUpdateGroup) {
