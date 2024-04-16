@@ -4,6 +4,7 @@ import java.util.List;
 import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
+import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
 
 public interface GroupService {
 
@@ -17,7 +18,7 @@ public interface GroupService {
 
     ResponseGroup getGroup(Long groupId);
 
-    List<ResponseGroup> getMyGroup(Long id);
+    List<ResponseMyGroup> getMyGroup(Long id);
 
     void updateGroup(Long adminId, RequestUpdateGroup requestUpdateGroup, Long groupId);
 

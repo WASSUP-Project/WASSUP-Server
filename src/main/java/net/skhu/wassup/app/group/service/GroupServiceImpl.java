@@ -16,8 +16,10 @@ import net.skhu.wassup.app.certification.GroupUniqueCodeService;
 import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
+import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
+import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.global.error.exception.CustomException;
 import net.skhu.wassup.global.message.EmailMessageSender;
 import org.springframework.stereotype.Service;
@@ -100,23 +102,31 @@ public class GroupServiceImpl implements GroupService {
                         .email(group.getEmail())
                         .imageUrl(group.getImageUrl())
                         .build())
-                .orElseThrow(() -> new IllegalArgumentException("그룹 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
     }
 
     @Override
     @Transactional
-    public List<ResponseGroup> getMyGroup(Long id) {
-        return groupRepository.findAllByAdminId(id)
-                .stream()
-                .map(group -> ResponseGroup.builder()
-                        .groupName(group.getName())
-                        .groupDescription(group.getDescription())
-                        .address(group.getAddress())
-                        .businessNumber(group.getBusinessNumber())
-                        .email(group.getEmail())
-                        .imageUrl(group.getImageUrl())
-                        .build())
-                .collect(Collectors.toList());
+    public List<ResponseMyGroup> getMyGroup(Long id) {
+        return groupRepository.findAllByAdminId(id).stream()
+                .map(group -> {
+                    long totalAcceptedMembers = group.getMembers()
+                            .stream()
+                            .filter(member -> !member.getIsWaiting())
+                            .count();
+                    long waitingMembers = group.getMembers()
+                            .stream()
+                            .filter(Member::getIsWaiting)
+                            .count();
+
+                    return ResponseMyGroup.builder()
+                            .groupName(group.getName())
+                            .address(group.getAddress())
+                            .totalMember((int) totalAcceptedMembers)
+                            .waitingMember((int) waitingMembers)
+                            .imageUrl(group.getImageUrl())
+                            .build();
+                }).collect(Collectors.toList());
     }
 
     @Override
