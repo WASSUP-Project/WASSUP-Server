@@ -11,7 +11,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
-import net.skhu.wassup.app.group.api.dto.RequestVerify;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
 import net.skhu.wassup.app.group.service.GroupService;
@@ -32,36 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupController {
 
     private final GroupService groupService;
-
-    @PostMapping("check")
-    @Operation(
-            summary = "그룹 이름 중복 확인",
-            description = "그룹 이름 중복을 확인합니다."
-    )
-    public ResponseEntity<Boolean> checkGroupName(@RequestParam String groupName) {
-        return ResponseEntity.status(OK).body(groupService.isDuplicateName(groupName));
-    }
-
-    @PostMapping("certification")
-    @Operation(
-            summary = "그룹 이메일 인증",
-            description = "그룹 이메일 인증을 진행합니다."
-    )
-    public ResponseEntity<Void> certification(@RequestParam String email) {
-        groupService.certification(email);
-
-        return ResponseEntity.status(OK).build();
-    }
-
-    @PostMapping("verify")
-    @Operation(
-            summary = "그룹 이메일 인증 확인",
-            description = "그룹 이메일 인증을 확인합니다."
-    )
-    public ResponseEntity<Boolean> verify(@RequestBody RequestVerify requestVerify) {
-        return ResponseEntity.status(OK)
-                .body(groupService.verify(requestVerify.email(), requestVerify.inputCertificationCode()));
-    }
 
     @PostMapping
     @Operation(

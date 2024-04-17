@@ -8,12 +8,6 @@ import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
 
 public interface GroupService {
 
-    boolean isDuplicateName(String groupName);
-
-    void certification(String email);
-
-    boolean verify(String email, String inputCode);
-
     void save(Long adminId, RequestGroup requestGroup);
 
     ResponseGroup getGroup(Long groupId);
