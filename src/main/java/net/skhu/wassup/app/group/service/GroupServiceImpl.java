@@ -120,6 +120,7 @@ public class GroupServiceImpl implements GroupService {
                             .count();
 
                     return ResponseMyGroup.builder()
+                            .id(group.getId())
                             .groupName(group.getName())
                             .address(group.getAddress())
                             .totalMember((int) totalAcceptedMembers)
