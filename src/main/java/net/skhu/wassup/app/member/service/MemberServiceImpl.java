@@ -1,9 +1,12 @@
 package net.skhu.wassup.app.member.service;
 
+import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
+
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
 import net.skhu.wassup.app.member.api.dto.RequestMember;
+import net.skhu.wassup.app.member.api.dto.ResponseMember;
 import net.skhu.wassup.app.member.domain.JoinStatus;
 import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.app.member.domain.MemberRepository;
@@ -34,6 +37,19 @@ public class MemberServiceImpl implements MemberService {
                 .joinStatus(JoinStatus.WAITING)
                 .group(group)
                 .build());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseMember getMember(Long id) {
+        return memberRepository.findById(id)
+                .map(member -> ResponseMember.builder()
+                        .name(member.getName())
+                        .address(member.getAddress())
+                        .phoneNumber(member.getPhoneNumber())
+                        .specifics(member.getSpecifics())
+                        .build())
+                .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
     }
 
 }

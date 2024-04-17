@@ -1,10 +1,11 @@
-package net.skhu.wassup.app.group.api.dto;
+package net.skhu.wassup.app.group.api;
 
 import static org.springframework.http.HttpStatus.OK;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.group.api.dto.RequestVerify;
 import net.skhu.wassup.app.group.service.GroupCertifyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
