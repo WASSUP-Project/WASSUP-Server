@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
@@ -12,6 +13,7 @@ import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
 import net.skhu.wassup.app.group.api.dto.RequestVerify;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
+import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
 import net.skhu.wassup.app.group.service.GroupService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -77,6 +79,7 @@ public class GroupController {
             summary = "그룹 정보 조회",
             description = "그룹 정보를 조회합니다."
     )
+    @Parameter(name = "id", description = "그룹 ID", required = true)
     public ResponseEntity<ResponseGroup> getGroup(@RequestParam Long id) {
         return ResponseEntity.status(OK).body(groupService.getGroup(id));
     }
@@ -86,7 +89,7 @@ public class GroupController {
             summary = "내 그룹 정보 조회",
             description = "내 그룹 정보를 조회합니다."
     )
-    public ResponseEntity<List<ResponseGroup>> getMyGroup(Principal principal) {
+    public ResponseEntity<List<ResponseMyGroup>> getMyGroup(Principal principal) {
         Long id = Long.parseLong(principal.getName());
         return ResponseEntity.status(OK).body(groupService.getMyGroup(id));
     }
@@ -96,9 +99,10 @@ public class GroupController {
             summary = "그룹 정보 수정",
             description = "그룹 정보를 수정합니다."
     )
+    @Parameter(name = "id", description = "그룹 ID", required = true)
     public ResponseEntity<Void> updateGroup(Principal principal,
-                                                     @RequestBody RequestUpdateGroup requestUpdateGroup,
-                                                     @RequestParam Long id) {
+                                            @RequestBody RequestUpdateGroup requestUpdateGroup,
+                                            @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
         groupService.updateGroup(adminId, requestUpdateGroup, id);
         return ResponseEntity.status(OK).build();
@@ -109,6 +113,7 @@ public class GroupController {
             summary = "그룹 삭제",
             description = "그룹을 삭제합니다."
     )
+    @Parameter(name = "id", description = "그룹 ID", required = true)
     public ResponseEntity<Void> deleteGroup(Principal principal, @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
         groupService.deleteGroup(adminId, id);

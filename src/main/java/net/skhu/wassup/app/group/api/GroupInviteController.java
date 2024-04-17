@@ -2,6 +2,8 @@ package net.skhu.wassup.app.group.api;
 
 import static org.springframework.http.HttpStatus.OK;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,11 @@ public class GroupInviteController {
     private final GroupInviteService groupInviteService;
 
     @PostMapping("send")
+    @Operation(
+            summary = "그룹 초대",
+            description = "그룹 초대를 진행합니다."
+    )
+    @Parameter(name = "id", description = "그룹 ID", required = true)
     public ResponseEntity<Void> send(Long id, @RequestBody RequestInviteGroup requestInviteGroup) {
         groupInviteService.send(id, requestInviteGroup);
 
@@ -30,6 +37,11 @@ public class GroupInviteController {
     }
 
     @PostMapping("accept")
+    @Operation(
+            summary = "그룹 초대 수락",
+            description = "그룹 초대를 수락합니다."
+    )
+    @Parameter(name = "id", description = "멤버 ID", required = true)
     public ResponseEntity<Void> accept(Principal principal, @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
         groupInviteService.accept(adminId, id);
@@ -38,6 +50,11 @@ public class GroupInviteController {
     }
 
     @PostMapping("reject")
+    @Operation(
+            summary = "그룹 초대 거절",
+            description = "그룹 초대를 거절합니다."
+    )
+    @Parameter(name = "id", description = "멤버 ID", required = true)
     public ResponseEntity<Void> reject(Principal principal, @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
         groupInviteService.reject(adminId, id);

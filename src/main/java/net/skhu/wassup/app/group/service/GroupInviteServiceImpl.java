@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.group.api.dto.RequestInviteGroup;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
-import net.skhu.wassup.app.member.domain.JoinStatus;
 import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.app.member.domain.MemberRepository;
 import net.skhu.wassup.global.error.ErrorCode;

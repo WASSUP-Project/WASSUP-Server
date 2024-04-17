@@ -23,6 +23,12 @@ public record ResponseGroup(
         String email,
 
         @Schema(description = "그룹 이미지 URL")
-        String imageUrl) {
+        String imageUrl,
+
+        @Schema(description = "총인원")
+        int totalMember,
+
+        @Schema(description = "가입대기중인 인원")
+        int waitingMember) {
 
 }

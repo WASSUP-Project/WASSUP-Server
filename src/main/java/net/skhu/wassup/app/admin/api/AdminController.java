@@ -88,4 +88,5 @@ public class AdminController {
         Long id = Long.parseLong(principal.getName());
         return ResponseEntity.status(OK).body(adminService.getAdmin(id));
     }
+
 }
