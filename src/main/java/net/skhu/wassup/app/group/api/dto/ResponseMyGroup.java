@@ -7,6 +7,9 @@ import lombok.Builder;
 @Schema(description = "내 그룹 조회")
 public record ResponseMyGroup(
 
+        @Schema(description = "그룹 ID")
+        Long id,
+
         @Schema(description = "그룹 이름")
         String groupName,
 
