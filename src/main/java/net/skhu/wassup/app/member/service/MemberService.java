@@ -5,7 +5,7 @@ import net.skhu.wassup.app.member.api.dto.ResponseMember;
 
 public interface MemberService {
 
-    void save(RequestMember requestMember);
+    void saveMember(RequestMember requestMember);
 
     ResponseMember getMember(Long id);
 

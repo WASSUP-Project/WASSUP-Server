@@ -13,11 +13,11 @@ public record ResponseMember(
         @Schema(description = "이름")
         String name,
 
-        @Schema(description = "주소")
-        String address,
-
         @Schema(description = "전화번호")
         String phoneNumber,
+
+        @Schema(description = "생년월일")
+        String birth,
 
         @Schema(description = "특이사항")
         String specifics) {

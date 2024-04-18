@@ -25,14 +25,14 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void save(RequestMember requestMember) {
+    public void saveMember(RequestMember requestMember) {
         Group group = groupRepository.findByUniqueCode(requestMember.groupCode())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_GROUP));
 
         memberRepository.save(Member.builder()
                 .name(requestMember.name())
                 .phoneNumber(requestMember.phoneNumber())
-                .address(requestMember.address())
+                .birth(requestMember.birth())
                 .specifics(requestMember.specifics())
                 .joinStatus(JoinStatus.WAITING)
                 .group(group)
@@ -44,9 +44,10 @@ public class MemberServiceImpl implements MemberService {
     public ResponseMember getMember(Long id) {
         return memberRepository.findById(id)
                 .map(member -> ResponseMember.builder()
+                        .id(member.getId())
                         .name(member.getName())
-                        .address(member.getAddress())
                         .phoneNumber(member.getPhoneNumber())
+                        .birth(member.getBirth())
                         .specifics(member.getSpecifics())
                         .build())
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));

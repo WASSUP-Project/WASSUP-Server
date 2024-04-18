@@ -1,7 +1,6 @@
 package net.skhu.wassup.app.member.api;
 
-import static javax.security.auth.callback.ConfirmationCallback.OK;
-import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
-@Tag(name = "Member", description = "회원 관리 API")
+@Tag(name = "Member Controller", description = "회원 관련 API")
 public class MemberController {
 
     private final MemberService memberService;
@@ -32,8 +31,8 @@ public class MemberController {
             description = "그룹에 가입을 요청합니다"
     )
     public ResponseEntity<Void> join(@RequestBody RequestMember requestMember) {
-        memberService.save(requestMember);
-        return ResponseEntity.status(CREATED).build();
+        memberService.saveMember(requestMember);
+        return ResponseEntity.status(OK).build();
     }
 
     @GetMapping
