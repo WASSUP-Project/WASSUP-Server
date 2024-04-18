@@ -145,8 +145,8 @@ public class GroupServiceImpl implements GroupService {
         return ResponseMember.builder()
                 .id(member.getId())
                 .name(member.getName())
-                .address(member.getAddress())
                 .phoneNumber(member.getPhoneNumber())
+                .birth(member.getBirth())
                 .specifics(member.getSpecifics())
                 .build();
     }
