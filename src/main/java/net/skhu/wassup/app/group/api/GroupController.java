@@ -14,6 +14,7 @@ import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
 import net.skhu.wassup.app.group.service.GroupService;
+import net.skhu.wassup.app.member.api.dto.ResponseMember;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +40,7 @@ public class GroupController {
     )
     public ResponseEntity<Void> createGroup(Principal principal, @RequestBody RequestGroup requestGroup) {
         Long id = Long.parseLong(principal.getName());
-        groupService.save(id, requestGroup);
+        groupService.saveGroup(id, requestGroup);
         return ResponseEntity.status(CREATED).build();
     }
 
@@ -60,7 +61,20 @@ public class GroupController {
     )
     public ResponseEntity<List<ResponseMyGroup>> getMyGroup(Principal principal) {
         Long id = Long.parseLong(principal.getName());
-        return ResponseEntity.status(OK).body(groupService.getMyGroup(id));
+        return ResponseEntity.status(OK).body(groupService.getMyGroups(id));
+    }
+
+    @GetMapping("members")
+    @Operation(
+            summary = "그룹 멤버 조회",
+            description = "그룹 멤버를 조회합니다."
+    )
+    @Parameter(name = "id", description = "그룹 ID", required = true)
+    @Parameter(name = "type", description = "멤버 타입 (waiting or accepted or null)")
+    public ResponseEntity<List<ResponseMember>> getMemberList(Principal principal, @RequestParam Long id,
+                                                              @RequestParam String type) {
+        Long adminId = Long.parseLong(principal.getName());
+        return ResponseEntity.status(OK).body(groupService.getMemberList(adminId, id, type));
     }
 
     @PutMapping

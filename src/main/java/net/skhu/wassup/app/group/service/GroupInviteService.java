@@ -4,7 +4,7 @@ import net.skhu.wassup.app.group.api.dto.RequestInviteGroup;
 
 public interface GroupInviteService {
 
-    void send(Long groupId, RequestInviteGroup requestInviteGroup);
+    void send(Long adminId, Long groupId, RequestInviteGroup requestInviteGroup);
 
     void accept(Long adminId, Long memberId);
 

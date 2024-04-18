@@ -5,14 +5,17 @@ import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
+import net.skhu.wassup.app.member.api.dto.ResponseMember;
 
 public interface GroupService {
 
-    void save(Long adminId, RequestGroup requestGroup);
+    void saveGroup(Long adminId, RequestGroup requestGroup);
 
     ResponseGroup getGroup(Long groupId);
 
-    List<ResponseMyGroup> getMyGroup(Long id);
+    List<ResponseMyGroup> getMyGroups(Long id);
+
+    List<ResponseMember> getMemberList(Long adminId, Long groupId, String type);
 
     void updateGroup(Long adminId, RequestUpdateGroup requestUpdateGroup, Long groupId);
 

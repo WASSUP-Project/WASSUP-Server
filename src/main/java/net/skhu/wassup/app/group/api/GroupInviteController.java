@@ -30,8 +30,11 @@ public class GroupInviteController {
             description = "그룹 초대를 진행합니다."
     )
     @Parameter(name = "id", description = "그룹 ID", required = true)
-    public ResponseEntity<Void> send(Long id, @RequestBody RequestInviteGroup requestInviteGroup) {
-        groupInviteService.send(id, requestInviteGroup);
+    public ResponseEntity<Void> send(Principal principal, @RequestParam Long id,
+                                     @RequestBody RequestInviteGroup requestInviteGroup) {
+        Long adminId = Long.parseLong(principal.getName());
+
+        groupInviteService.send(adminId, id, requestInviteGroup);
 
         return ResponseEntity.status(OK).build();
     }
@@ -44,6 +47,7 @@ public class GroupInviteController {
     @Parameter(name = "id", description = "멤버 ID", required = true)
     public ResponseEntity<Void> accept(Principal principal, @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
+
         groupInviteService.accept(adminId, id);
 
         return ResponseEntity.status(OK).build();
@@ -57,6 +61,7 @@ public class GroupInviteController {
     @Parameter(name = "id", description = "멤버 ID", required = true)
     public ResponseEntity<Void> reject(Principal principal, @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
+
         groupInviteService.reject(adminId, id);
 
         return ResponseEntity.status(OK).build();
