@@ -34,9 +34,9 @@ public class GroupInviteServiceImpl implements GroupInviteService {
         validateAdmin(adminId, group);
 
         String code = group.getUniqueCode();
-        String message = group.getName() + "/n" + requestInviteGroup.link() + "\n 초대 코드 : " + code;
+        String message = group.getName() + "\n\n" + requestInviteGroup.link() + "\n\n초대 코드 : " + code;
 
-        smsMessageSender.send(requestInviteGroup.phoneNumber(), "Wassup 초대 코드를 아래 링크에 입력해주세요.", message);
+        smsMessageSender.send(requestInviteGroup.phoneNumber(), "Wassup 아래 링크를 통해 가입해주세요.", message);
     }
 
     @Override
