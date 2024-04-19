@@ -1,9 +1,7 @@
 package net.skhu.wassup.app.group.service;
 
-import static net.skhu.wassup.global.error.ErrorCode.INVALID_EMAIL;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_ADMIN;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
-import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_CERTIFICATION_CODE;
 import static net.skhu.wassup.global.error.ErrorCode.UNAUTHORIZED_ADMIN;
 
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.domain.Admin;
 import net.skhu.wassup.app.admin.domain.AdminRepository;
-import net.skhu.wassup.app.certification.CertificationCodeService;
 import net.skhu.wassup.app.certification.GroupUniqueCodeService;
 import net.skhu.wassup.app.group.api.dto.RequestGroup;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
@@ -19,9 +16,10 @@ import net.skhu.wassup.app.group.api.dto.ResponseGroup;
 import net.skhu.wassup.app.group.api.dto.ResponseMyGroup;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
+import net.skhu.wassup.app.member.api.dto.ResponseMember;
+import net.skhu.wassup.app.member.domain.JoinStatus;
 import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.global.error.exception.CustomException;
-import net.skhu.wassup.global.message.EmailMessageSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,53 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class GroupServiceImpl implements GroupService {
 
-    private static final String EMAIL_REGEX = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-
     private final GroupRepository groupRepository;
 
-    private final CertificationCodeService certificationCodeService;
-
     private final GroupUniqueCodeService groupUniqueCodeService;
-
-    private final EmailMessageSender emailMessageSender;
 
     private final AdminRepository adminRepository;
 
     @Override
-    public boolean isDuplicateName(String groupName) {
-        return groupRepository.existsGroupByName(groupName);
-    }
-
-    @Override
-    public void certification(String email) {
-        String certificationCode = certificationCodeService.getCertificationCode(email);
-
-        if (!email.matches(EMAIL_REGEX)) {
-            throw new CustomException(INVALID_EMAIL);
-        }
-
-        emailMessageSender.send(email, "Wassup 인증번호", certificationCode);
-    }
-
-    @Override
-    public boolean verify(String email, String inputCode) {
-        String certificationCode = certificationCodeService.getCertificationCode(email);
-
-        if (!certificationCode.equals(inputCode)) {
-            throw new CustomException(NOT_MATCH_CERTIFICATION_CODE);
-        }
-
-        certificationCodeService.deleteCertificationCode(email);
-
-        return true;
-    }
-
-    @Override
     @Transactional
-    public void save(Long adminId, RequestGroup requestGroup) {
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
-
+    public void saveGroup(Long adminId, RequestGroup requestGroup) {
+        Admin admin = getAdminOrThrow(adminId);
         String uniqueCode = groupUniqueCodeService.getGroupUniqueCode();
 
         groupRepository.save(Group.builder()
@@ -92,53 +53,39 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseGroup getGroup(Long id) {
-        return groupRepository.findById(id)
-                .map(group -> ResponseGroup.builder()
-                        .groupName(group.getName())
-                        .groupDescription(group.getDescription())
-                        .address(group.getAddress())
-                        .businessNumber(group.getBusinessNumber())
-                        .email(group.getEmail())
-                        .imageUrl(group.getImageUrl())
-                        .build())
-                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
+    public ResponseGroup getGroup(Long groupId) {
+        Group group = getGroupOrThrow(groupId);
+
+        return mapToResponseGroup(group);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ResponseMyGroup> getMyGroup(Long id) {
-        return groupRepository.findAllByAdminId(id).stream()
-                .map(group -> {
-                    long totalAcceptedMembers = group.getMembers()
-                            .stream()
-                            .filter(member -> !member.getIsWaiting())
-                            .count();
-                    long waitingMembers = group.getMembers()
-                            .stream()
-                            .filter(Member::getIsWaiting)
-                            .count();
+    public List<ResponseMyGroup> getMyGroups(Long adminId) {
+        List<Group> groups = groupRepository.findAllByAdminId(adminId);
 
-                    return ResponseMyGroup.builder()
-                            .id(group.getId())
-                            .groupName(group.getName())
-                            .address(group.getAddress())
-                            .totalMember((int) totalAcceptedMembers)
-                            .waitingMember((int) waitingMembers)
-                            .imageUrl(group.getImageUrl())
-                            .build();
-                }).collect(Collectors.toList());
+        return groups.stream()
+                .map(this::mapToResponseMyGroup)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ResponseMember> getMemberList(Long adminId, Long groupId, String type) {
+        Group group = getGroupOrThrow(groupId);
+        validateAdmin(adminId, group);
+
+        return group.getMembers().stream()
+                .filter(member -> filterMembersByType(member, type))
+                .map(this::mapToResponseMember)
+                .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public void updateGroup(Long id, RequestUpdateGroup requestUpdateGroup, Long groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
-
-        if (!group.getAdmin().getId().equals(id)) {
-            throw new CustomException(UNAUTHORIZED_ADMIN);
-        }
+        Group group = getGroupOrThrow(groupId);
+        validateAdmin(id, group);
 
         group.update(requestUpdateGroup);
     }
@@ -146,14 +93,70 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void deleteGroup(Long id, Long groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
+        Group group = getGroupOrThrow(groupId);
+        validateAdmin(id, group);
 
+        groupRepository.deleteById(groupId);
+    }
+
+    private Group getGroupOrThrow(Long groupId) {
+        return groupRepository.findById(groupId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
+    }
+
+    private Admin getAdminOrThrow(Long adminId) {
+        return adminRepository.findById(adminId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
+    }
+
+    private void validateAdmin(Long id, Group group) {
         if (!group.getAdmin().getId().equals(id)) {
             throw new CustomException(UNAUTHORIZED_ADMIN);
         }
+    }
 
-        groupRepository.deleteById(groupId);
+    private ResponseGroup mapToResponseGroup(Group group) {
+        return ResponseGroup.builder()
+                .groupName(group.getName())
+                .groupDescription(group.getDescription())
+                .address(group.getAddress())
+                .businessNumber(group.getBusinessNumber())
+                .email(group.getEmail())
+                .imageUrl(group.getImageUrl())
+                .build();
+    }
+
+    private ResponseMyGroup mapToResponseMyGroup(Group group) {
+        return ResponseMyGroup.builder()
+                .id(group.getId())
+                .groupName(group.getName())
+                .address(group.getAddress())
+                .totalMember((int) group.getMembers().stream()
+                        .filter(member -> member.getJoinStatus() == JoinStatus.ACCEPTED)
+                        .count())
+                .waitingMember((int) group.getMembers().stream()
+                        .filter(member -> member.getJoinStatus() == JoinStatus.WAITING)
+                        .count())
+                .imageUrl(group.getImageUrl())
+                .build();
+    }
+
+    private ResponseMember mapToResponseMember(Member member) {
+        return ResponseMember.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .birth(member.getBirth())
+                .specifics(member.getSpecifics())
+                .build();
+    }
+
+    private boolean filterMembersByType(Member member, String type) {
+        return switch (type) {
+            case "waiting" -> member.getJoinStatus() == JoinStatus.WAITING;
+            case "accepted" -> member.getJoinStatus() == JoinStatus.ACCEPTED;
+            default -> true;
+        };
     }
 
 }

@@ -10,13 +10,13 @@ public record RequestMember(
         @NotBlank(message = "이름을 입력해주세요.")
         String name,
 
-        @Schema(description = "주소")
-        @NotBlank(message = "주소를 입력해주세요.")
-        String address,
-
         @Schema(description = "전화번호")
         @NotBlank(message = "전화번호를 입력해주세요.")
         String phoneNumber,
+
+        @Schema(description = "생년월일")
+        @NotBlank(message = "생년월일을 입력해주세요.")
+        String birth,
 
         @Schema(description = "특이사항")
         String specifics,

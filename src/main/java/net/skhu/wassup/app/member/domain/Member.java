@@ -38,8 +38,8 @@ public class Member extends BaseTimeEntity {
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
-    @Column(name = "address", nullable = false)
-    private String address;
+    @Column(name = "birth", nullable = false)
+    private String birth;
 
     @Column(name = "specifics")
     private String specifics;
@@ -48,11 +48,12 @@ public class Member extends BaseTimeEntity {
     private JoinStatus joinStatus;
 
     @Builder
-    public Member(Group group, String name, String phoneNumber, String address, String specifics, JoinStatus joinStatus) {
+    public Member(Group group, String name, String phoneNumber, String birth, String specifics,
+                  JoinStatus joinStatus) {
         this.group = group;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.address = address;
+        this.birth = birth;
         this.specifics = specifics;
         this.joinStatus = joinStatus;
     }
