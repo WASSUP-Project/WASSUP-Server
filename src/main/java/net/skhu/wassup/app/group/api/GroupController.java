@@ -40,7 +40,9 @@ public class GroupController {
     )
     public ResponseEntity<Void> createGroup(Principal principal, @RequestBody RequestGroup requestGroup) {
         Long id = Long.parseLong(principal.getName());
+
         groupService.saveGroup(id, requestGroup);
+
         return ResponseEntity.status(CREATED).build();
     }
 
@@ -61,6 +63,7 @@ public class GroupController {
     )
     public ResponseEntity<List<ResponseMyGroup>> getMyGroup(Principal principal) {
         Long id = Long.parseLong(principal.getName());
+
         return ResponseEntity.status(OK).body(groupService.getMyGroups(id));
     }
 
@@ -74,6 +77,7 @@ public class GroupController {
     public ResponseEntity<List<ResponseMember>> getMemberList(Principal principal, @RequestParam Long id,
                                                               @RequestParam String type) {
         Long adminId = Long.parseLong(principal.getName());
+
         return ResponseEntity.status(OK).body(groupService.getMemberList(adminId, id, type));
     }
 
@@ -87,7 +91,9 @@ public class GroupController {
                                             @RequestBody RequestUpdateGroup requestUpdateGroup,
                                             @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
+
         groupService.updateGroup(adminId, requestUpdateGroup, id);
+
         return ResponseEntity.status(OK).build();
     }
 
@@ -99,7 +105,9 @@ public class GroupController {
     @Parameter(name = "id", description = "그룹 ID", required = true)
     public ResponseEntity<Void> deleteGroup(Principal principal, @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
+
         groupService.deleteGroup(adminId, id);
+
         return ResponseEntity.status(OK).build();
     }
 

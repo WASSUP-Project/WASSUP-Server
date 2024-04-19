@@ -62,8 +62,4 @@ public class Member extends BaseTimeEntity {
         this.joinStatus = JoinStatus.ACCEPTED;
     }
 
-    public boolean getIsWaiting() {
-        return this.joinStatus == JoinStatus.WAITING;
-    }
-
 }
