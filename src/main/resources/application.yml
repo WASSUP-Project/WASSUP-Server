@@ -62,3 +62,14 @@ springdoc:
   default-produces-media-type: application/json;charset=UTF-8
 
 server: ${PRODUCTION_SERVER_URL}
+
+# Logging
+logging:
+  level:
+    root: info
+    net.skhu.wassup: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+  file:
+    name: app.log
+    path: ./logs
