@@ -27,7 +27,7 @@ public class SecurityConfig {
     private String[] allowedOrigins;
 
     private static final String[] AUTH_WHITELIST = {
-            "/swagger-ui/**", "/api-docs/**", "/api/admins/**"
+            "/swagger-ui/**", "/api-docs/**", "/api/admins/**", "/api/members/join"
     };
 
     private final TokenProvider tokenProvider;
