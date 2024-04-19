@@ -1,5 +1,6 @@
 package net.skhu.wassup.app.admin.api;
 
+import static net.skhu.wassup.global.error.ErrorCode.DUPLICATE_ADMIN_ID;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -13,6 +14,7 @@ import net.skhu.wassup.app.admin.api.dto.RequestVerify;
 import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 import net.skhu.wassup.app.admin.service.AdminService;
+import net.skhu.wassup.global.error.exception.CustomException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -56,7 +58,10 @@ public class AdminController {
             description = "아이디 중복을 확인합니다."
     )
     public ResponseEntity<Boolean> isDuplicateId(@RequestParam String adminId) {
-        return ResponseEntity.status(OK).body(adminService.isDuplicateId(adminId));
+        if (adminService.isDuplicateId(adminId)) {
+            throw new CustomException(DUPLICATE_ADMIN_ID);
+        }
+        return ResponseEntity.status(OK).body(false);
     }
 
     @PostMapping("signup")

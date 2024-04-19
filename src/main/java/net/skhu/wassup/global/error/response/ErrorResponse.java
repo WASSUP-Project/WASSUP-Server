@@ -1,5 +1,6 @@
 package net.skhu.wassup.global.error.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
 import net.skhu.wassup.global.error.ErrorCode;
@@ -17,6 +18,8 @@ public class ErrorResponse {
 
     private final String message;
 
+    private final LocalDateTime timestamp;
+
     public static ResponseEntity<ErrorResponse> toResponseEntity(ErrorCode e) {
         return ResponseEntity
                 .status(e.getHttpStatus())
@@ -25,6 +28,7 @@ public class ErrorResponse {
                         .name(e.name())
                         .code(e.getCode())
                         .message(e.getMessage())
+                        .timestamp(LocalDateTime.now())
                         .build()
                 );
     }

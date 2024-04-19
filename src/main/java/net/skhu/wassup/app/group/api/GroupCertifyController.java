@@ -1,5 +1,6 @@
 package net.skhu.wassup.app.group.api;
 
+import static net.skhu.wassup.global.error.ErrorCode.DUPLICATE_GROUP_NAME;
 import static org.springframework.http.HttpStatus.OK;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.group.api.dto.RequestVerify;
 import net.skhu.wassup.app.group.service.GroupCertifyService;
+import net.skhu.wassup.global.error.exception.CustomException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +30,11 @@ public class GroupCertifyController {
             description = "그룹 이름 중복을 확인합니다."
     )
     public ResponseEntity<Boolean> checkGroupName(@RequestParam String groupName) {
-        return ResponseEntity.status(OK).body(groupCertifyService.isDuplicateName(groupName));
+        if (groupCertifyService.isDuplicateName(groupName)) {
+            throw new CustomException(DUPLICATE_GROUP_NAME);
+        }
+
+        return ResponseEntity.status(OK).body(false);
     }
 
     @PostMapping("certification")
