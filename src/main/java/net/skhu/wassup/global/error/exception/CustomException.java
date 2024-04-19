@@ -7,5 +7,5 @@ import net.skhu.wassup.global.error.ErrorCode;
 @Getter
 @AllArgsConstructor
 public class CustomException extends RuntimeException {
-    ErrorCode errorCode;
+    private final ErrorCode errorCode;
 }
