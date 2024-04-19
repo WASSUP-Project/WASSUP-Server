@@ -1,5 +1,6 @@
 package net.skhu.wassup.app.member.service;
 
+import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import net.skhu.wassup.app.member.api.dto.ResponseMember;
 import net.skhu.wassup.app.member.domain.JoinStatus;
 import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.app.member.domain.MemberRepository;
-import net.skhu.wassup.global.error.ErrorCode;
 import net.skhu.wassup.global.error.exception.CustomException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public void saveMember(RequestMember requestMember) {
         Group group = groupRepository.findByUniqueCode(requestMember.groupCode())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_GROUP));
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
 
         memberRepository.save(Member.builder()
                 .name(requestMember.name())
