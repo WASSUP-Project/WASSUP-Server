@@ -1,5 +1,6 @@
 INSERT INTO admin_table (create_date, update_date, admin_account_id, name, password, phone_number)
-values ('2024-04-01 00:00:00', '2024-04-01 00:00:00', 'admin', '관리자', '12341234', '01012341234');
+values ('2024-04-01 00:00:00', '2024-04-01 00:00:00', 'admin', '관리자',
+        '$2a$10$BQ94EduRIIKGioyoXv4dieZJSAaL10A0Bi1VIF24UqVGe.xMhpd4y', '01012341234');
 
 INSERT INTO group_table (create_date, group_admin_id, update_date, address, business_number, description, email,
                          group_unique_code, image_url, name)
