@@ -19,6 +19,8 @@ spring:
   sql:
     init:
       mode: always
+      data-locations: classpath*:database/data.sql
+      platform: MySQL
 
   mail:
     host: ${MAIL_HOST}
