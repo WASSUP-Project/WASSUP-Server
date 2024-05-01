@@ -31,7 +31,9 @@ public class GroupInviteServiceImpl implements GroupInviteService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
 
-        validateAdmin(adminId, group);
+        if (isNotUserGroupAdmin(adminId, group)) {
+            throw new CustomException(UNAUTHORIZED_ADMIN);
+        }
 
         String code = group.getUniqueCode();
         String message = group.getName() + "\n\n" + requestInviteGroup.link() + "\n\n초대 코드 : " + code;
@@ -46,7 +48,10 @@ public class GroupInviteServiceImpl implements GroupInviteService {
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
 
         Group group = member.getGroup();
-        validateAdmin(id, group);
+
+        if (isNotUserGroupAdmin(id, group)) {
+            throw new CustomException(UNAUTHORIZED_ADMIN);
+        }
 
         member.accept();
     }
@@ -58,15 +63,16 @@ public class GroupInviteServiceImpl implements GroupInviteService {
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
 
         Group group = member.getGroup();
-        validateAdmin(id, group);
+
+        if (isNotUserGroupAdmin(id, group)) {
+            throw new CustomException(UNAUTHORIZED_ADMIN);
+        }
 
         memberRepository.deleteById(memberId);
     }
 
-    private void validateAdmin(Long id, Group group) {
-        if (!group.getAdmin().getId().equals(id)) {
-            throw new CustomException(UNAUTHORIZED_ADMIN);
-        }
+    private boolean isNotUserGroupAdmin(Long id, Group group) {
+        return !group.getAdmin().getId().equals(id);
     }
 
 }

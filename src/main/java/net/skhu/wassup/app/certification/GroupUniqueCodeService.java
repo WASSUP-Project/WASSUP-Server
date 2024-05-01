@@ -1,9 +1,12 @@
 package net.skhu.wassup.app.certification;
 
+import static net.skhu.wassup.global.error.ErrorCode.DUPLICATE_GROUP_CODE;
+
 import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.skhu.wassup.app.group.domain.GroupRepository;
+import net.skhu.wassup.global.error.exception.CustomException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -19,6 +22,7 @@ public class GroupUniqueCodeService {
 
         for (int i = 0; i < 6; i++) {
             int random = secureRandom.nextInt(2);
+
             if (random == 0) {
                 char randomChar = (char) (secureRandom.nextInt(26) + 'A');
                 codeBuilder.append(randomChar);
@@ -28,15 +32,17 @@ public class GroupUniqueCodeService {
             }
         }
         String code = codeBuilder.toString();
-        isDuplicateCode(code);
+
+        if (isDuplicateCode(code)) {
+            throw new CustomException(DUPLICATE_GROUP_CODE);
+        }
+
         log.info("그룹 고유 코드 생성: Code={}", code);
         return code;
     }
 
-    private void isDuplicateCode(String code) {
-        if (groupRepository.existsGroupByUniqueCode(code)) {
-            log.error("그룹 고유 코드 중복: Code={}", code);
-        }
+    private boolean isDuplicateCode(String code) {
+        return groupRepository.existsGroupByUniqueCode(code);
     }
 
 }
