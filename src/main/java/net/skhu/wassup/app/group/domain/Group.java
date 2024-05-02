@@ -1,6 +1,6 @@
 package net.skhu.wassup.app.group.domain;
 
-import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,18 +60,21 @@ public class Group extends BaseTimeEntity {
     private String uniqueCode;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group", fetch = EAGER)
+    @OneToMany(mappedBy = "group", fetch = LAZY)
     private List<Member> members;
 
     public void update(RequestUpdateGroup requestUpdateGroup) {
-        this.description = (requestUpdateGroup.description() != null) ? requestUpdateGroup.description() : this.description;
+        this.description =
+                (requestUpdateGroup.description() != null) ? requestUpdateGroup.description() : this.description;
         this.address = (requestUpdateGroup.address() != null) ? requestUpdateGroup.address() : this.address;
-        this.businessNumber = (requestUpdateGroup.businessNumber() != null) ? requestUpdateGroup.businessNumber() : this.businessNumber;
+        this.businessNumber = (requestUpdateGroup.businessNumber() != null) ? requestUpdateGroup.businessNumber()
+                : this.businessNumber;
         this.imageUrl = (requestUpdateGroup.imageUrl() != null) ? requestUpdateGroup.imageUrl() : this.imageUrl;
     }
 
     @Builder
-    public Group(Admin admin, String name, String description, String address, String businessNumber, String email, String imageUrl, String uniqueCode) {
+    public Group(Admin admin, String name, String description, String address, String businessNumber, String email,
+                 String imageUrl, String uniqueCode) {
         this.admin = admin;
         this.name = name;
         this.description = description;

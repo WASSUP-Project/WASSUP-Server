@@ -61,6 +61,7 @@ public class AdminController {
         if (adminService.isDuplicateId(adminId)) {
             throw new CustomException(DUPLICATE_ADMIN_ID);
         }
+
         return ResponseEntity.status(OK).body(false);
     }
 
@@ -91,6 +92,7 @@ public class AdminController {
     )
     public ResponseEntity<ResponseAdmin> getAdmin(Principal principal) {
         Long id = Long.parseLong(principal.getName());
+
         return ResponseEntity.status(OK).body(adminService.getAdmin(id));
     }
 
