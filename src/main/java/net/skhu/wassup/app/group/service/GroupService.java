@@ -13,7 +13,7 @@ public interface GroupService {
 
     ResponseGroup getGroup(Long groupId);
 
-    List<ResponseMyGroup> getMyGroups(Long id);
+    List<ResponseMyGroup> getMyGroups(Long adminId);
 
     List<ResponseMember> getMemberList(Long adminId, Long groupId, String type);
 
