@@ -1,18 +1,24 @@
 package net.skhu.wassup.app.member.domain;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.skhu.wassup.app.attendance.domain.Attendance;
 import net.skhu.wassup.app.common.BaseTimeEntity;
 import net.skhu.wassup.app.group.domain.Group;
 
@@ -44,8 +50,13 @@ public class Member extends BaseTimeEntity {
     @Column(name = "specifics")
     private String specifics;
 
+    @Enumerated
     @Column(name = "join_status", nullable = false)
     private JoinStatus joinStatus;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", fetch = LAZY)
+    private List<Attendance> attendances;
 
     @Builder
     public Member(Group group, String name, String phoneNumber, String birth, String specifics,
