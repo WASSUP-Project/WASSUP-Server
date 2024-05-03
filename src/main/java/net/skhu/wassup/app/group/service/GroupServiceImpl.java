@@ -35,8 +35,8 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional
-    public void saveGroup(Long adminId, RequestGroup requestGroup) {
-        Admin admin = getAdminOrThrow(adminId);
+    public void saveGroup(Long id, RequestGroup requestGroup) {
+        Admin admin = getAdminOrThrow(id);
         String uniqueCode = groupUniqueCodeService.getGroupUniqueCode();
 
         groupRepository.save(Group.builder()
@@ -53,27 +53,26 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseGroup getGroup(Long groupId) {
-        Group group = getGroupOrThrow(groupId);
+    public ResponseGroup getGroup(Long id) {
+        Group group = getGroupOrThrow(id);
 
         return mapToResponseGroup(group);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ResponseMyGroup> getMyGroups(Long adminId) {
-        List<Group> groups = groupRepository.findAllByAdminId(adminId);
-
-        return groups.stream()
-                .map(this::mapToResponseMyGroup)
-                .collect(Collectors.toList());
+    public List<ResponseMyGroup> getMyGroups(Long id) {
+        return groupRepository.getMyGroups(id);
     }
 
     @Override
     @Transactional
-    public List<ResponseMember> getMemberList(Long adminId, Long groupId, String type) {
+    public List<ResponseMember> getMemberList(Long id, Long groupId, String type) {
         Group group = getGroupOrThrow(groupId);
-        validateAdmin(adminId, group);
+
+        if (isNotUserGroupAdmin(id, group)) {
+            throw new CustomException(UNAUTHORIZED_ADMIN);
+        }
 
         return group.getMembers().stream()
                 .filter(member -> filterMembersByType(member, type))
@@ -85,7 +84,10 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void updateGroup(Long id, RequestUpdateGroup requestUpdateGroup, Long groupId) {
         Group group = getGroupOrThrow(groupId);
-        validateAdmin(id, group);
+
+        if (isNotUserGroupAdmin(id, group)) {
+            throw new CustomException(UNAUTHORIZED_ADMIN);
+        }
 
         group.update(requestUpdateGroup);
     }
@@ -94,7 +96,10 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void deleteGroup(Long id, Long groupId) {
         Group group = getGroupOrThrow(groupId);
-        validateAdmin(id, group);
+
+        if (isNotUserGroupAdmin(id, group)) {
+            throw new CustomException(UNAUTHORIZED_ADMIN);
+        }
 
         groupRepository.deleteById(groupId);
     }
@@ -104,15 +109,13 @@ public class GroupServiceImpl implements GroupService {
                 .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
     }
 
-    private Admin getAdminOrThrow(Long adminId) {
-        return adminRepository.findById(adminId)
+    private Admin getAdminOrThrow(Long id) {
+        return adminRepository.findById(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
     }
 
-    private void validateAdmin(Long id, Group group) {
-        if (!group.getAdmin().getId().equals(id)) {
-            throw new CustomException(UNAUTHORIZED_ADMIN);
-        }
+    private boolean isNotUserGroupAdmin(Long id, Group group) {
+        return !group.getAdmin().getId().equals(id);
     }
 
     private ResponseGroup mapToResponseGroup(Group group) {
@@ -122,21 +125,6 @@ public class GroupServiceImpl implements GroupService {
                 .address(group.getAddress())
                 .businessNumber(group.getBusinessNumber())
                 .email(group.getEmail())
-                .imageUrl(group.getImageUrl())
-                .build();
-    }
-
-    private ResponseMyGroup mapToResponseMyGroup(Group group) {
-        return ResponseMyGroup.builder()
-                .id(group.getId())
-                .groupName(group.getName())
-                .address(group.getAddress())
-                .totalMember((int) group.getMembers().stream()
-                        .filter(member -> member.getJoinStatus() == JoinStatus.ACCEPTED)
-                        .count())
-                .waitingMember((int) group.getMembers().stream()
-                        .filter(member -> member.getJoinStatus() == JoinStatus.WAITING)
-                        .count())
                 .imageUrl(group.getImageUrl())
                 .build();
     }

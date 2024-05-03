@@ -13,6 +13,7 @@ public enum ErrorCode {
 
     DUPLICATE_ADMIN_ID(HttpStatus.BAD_REQUEST, "DP001", "이미 존재하는 아이디입니다."),
     DUPLICATE_GROUP_NAME(HttpStatus.BAD_REQUEST, "DP002", "이미 존재하는 그룹 이름입니다."),
+    DUPLICATE_GROUP_CODE(HttpStatus.BAD_REQUEST, "DP003", "이미 존재하는 그룹 코드입니다."),
 
     NOT_FOUND_ADMIN(HttpStatus.NOT_FOUND, "NF001", "존재하지 않는 관리자입니다."),
     NOT_FOUND_GROUP(HttpStatus.NOT_FOUND, "NF002", "그룹 정보가 존재하지 않습니다."),

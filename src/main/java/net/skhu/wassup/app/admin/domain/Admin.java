@@ -1,7 +1,7 @@
 package net.skhu.wassup.app.admin.domain;
 
 import static jakarta.persistence.CascadeType.REMOVE;
-import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,7 +44,7 @@ public class Admin extends BaseTimeEntity {
     private String phoneNumber;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "admin", cascade = REMOVE, fetch = EAGER)
+    @OneToMany(mappedBy = "admin", cascade = REMOVE, fetch = LAZY)
     private List<Group> groups;
 
     @Builder
