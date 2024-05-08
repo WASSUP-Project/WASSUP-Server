@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.skhu.wassup.app.common.BaseTimeEntity;
@@ -29,10 +30,6 @@ public class Attendance extends BaseTimeEntity {
     @Column(name = "attendance_id")
     private Long id;
 
-    @Enumerated
-    @Column(name = "status", nullable = false)
-    private Status status;
-
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
@@ -40,5 +37,16 @@ public class Attendance extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-    
+
+    @Enumerated
+    @Column(name = "status", nullable = false)
+    private Status status;
+
+    @Builder
+    public Attendance(Group group, Member member, Status status) {
+        this.group = group;
+        this.member = member;
+        this.status = status;
+    }
+
 }
