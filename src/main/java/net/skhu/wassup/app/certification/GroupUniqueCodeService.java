@@ -26,11 +26,12 @@ public class GroupUniqueCodeService {
             if (random == 0) {
                 char randomChar = (char) (secureRandom.nextInt(26) + 'A');
                 codeBuilder.append(randomChar);
-            } else {
-                int randomNumber = secureRandom.nextInt(10);
-                codeBuilder.append(randomNumber);
+                continue;
             }
+            int randomNumber = secureRandom.nextInt(10);
+            codeBuilder.append(randomNumber);
         }
+
         String code = codeBuilder.toString();
 
         if (isDuplicateCode(code)) {
