@@ -13,4 +13,6 @@ public interface AttendanceService {
 
     void saveAttendance(Long memberId);
 
+    int calculateAttendanceRate(Long groupId);
+
 }
