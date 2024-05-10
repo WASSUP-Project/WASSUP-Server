@@ -4,7 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import net.skhu.wassup.app.attendance.api.dto.RequestAttendance;
+import net.skhu.wassup.app.attendance.api.dto.RequestCode;
+import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceInfo;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
 import net.skhu.wassup.app.attendance.service.AttendanceService;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,24 +35,35 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.generateAttendanceCode(groupId));
     }
 
-    @PostMapping
+    @GetMapping("members")
     @Operation(
             summary = "출석 시 뒷 번호 일치하는 멤버 리스트 조회",
             description = "출석 시 뒷 번호가 같은 멤버 리스트를 조회합니다."
     )
     public ResponseEntity<List<ResponseAttendanceMember>> findMembers(
-            @RequestBody RequestAttendance requestAttendance) {
-        return ResponseEntity.ok(attendanceService.findMembers(requestAttendance));
+            @RequestParam String code, @RequestParam String phoneNumber) {
+        return ResponseEntity.ok(attendanceService.findMembers(code, phoneNumber));
     }
 
-    @PostMapping("/{memberId}")
+    @PostMapping("{memberId}")
     @Operation(
             summary = "출석 처리",
             description = "출석을 처리합니다."
     )
-    public ResponseEntity<Void> saveAttendance(@PathVariable Long memberId) {
-        attendanceService.saveAttendance(memberId);
+    public ResponseEntity<Void> saveAttendance(@RequestBody RequestCode requestCode, @PathVariable Long memberId) {
+        String code = requestCode.code();
+        attendanceService.saveAttendance(code, memberId);
+
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("info/{groupId}")
+    @Operation(
+            summary = "출석률과 미출석 멤버 조회",
+            description = "금일 출석률과 미출석 멤버를 조회합니다."
+    )
+    public ResponseEntity<ResponseAttendanceInfo> getAttendanceInfo(@PathVariable Long groupId) {
+        return ResponseEntity.ok(attendanceService.getAttendanceInfo(groupId));
     }
 
 }
