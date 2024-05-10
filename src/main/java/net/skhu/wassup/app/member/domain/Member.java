@@ -18,14 +18,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.skhu.wassup.app.attendance.domain.Attendance;
 import net.skhu.wassup.app.common.BaseTimeEntity;
 import net.skhu.wassup.app.group.domain.Group;
+import net.skhu.wassup.app.member.api.dto.RequestUpdateMember;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 @Table(name = "member_table")
 public class Member extends BaseTimeEntity {
 
@@ -67,6 +70,14 @@ public class Member extends BaseTimeEntity {
         this.birth = birth;
         this.specifics = specifics;
         this.joinStatus = joinStatus;
+    }
+
+    public void update(RequestUpdateMember requestUpdateMember) {
+        this.name = (requestUpdateMember.name() != null) ? requestUpdateMember.name() : this.name;
+        this.phoneNumber =
+                (requestUpdateMember.phoneNumber() != null) ? requestUpdateMember.phoneNumber() : this.phoneNumber;
+        this.birth = (requestUpdateMember.birth() != null) ? requestUpdateMember.birth() : this.birth;
+        this.specifics = (requestUpdateMember.specifics() != null) ? requestUpdateMember.specifics() : this.specifics;
     }
 
     public void accept() {
