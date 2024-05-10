@@ -6,6 +6,7 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceInfo;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
 import net.skhu.wassup.app.attendance.domain.Attendance;
@@ -17,12 +18,11 @@ import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.app.member.domain.MemberRepository;
 import net.skhu.wassup.global.error.exception.CustomException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
-
-    private final static int ATTENDANCE_RATE = 100;
 
     private final AttendanceCodeService attendanceCodeService;
 
@@ -44,6 +44,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ResponseAttendanceMember> findMembers(String code, String phoneNumber) {
         Long groupId = getGroupId(code);
 
@@ -51,6 +52,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
+    @Transactional
     public void saveAttendance(String code, Long memberId) {
         Long groupId = getGroupId(code);
         Group group = groupRepository.findById(groupId)
@@ -67,14 +69,21 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .build());
     }
 
-    @Override
-    public int calculateAttendanceRate(Long groupId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
-        int totalMemberCount = group.getMembers().size();
-        int attendanceMemberCount = attendanceRepository.countByGroupAndStatus(groupId);
+    private int calculateAttendanceRate(Long groupId) {
+        return attendanceRepository.getAttendanceRateByGroupId(groupId);
+    }
 
-        return (attendanceMemberCount * ATTENDANCE_RATE) / totalMemberCount;
+    private List<ResponseAttendanceMember> getNotAttendanceMembers(Long groupId) {
+        return attendanceRepository.getNotAttendanceMemberByGroupId(groupId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseAttendanceInfo getAttendanceInfo(Long groupId) {
+        return ResponseAttendanceInfo.builder()
+                .attendanceRate(calculateAttendanceRate(groupId))
+                .notAttendanceMembers(getNotAttendanceMembers(groupId))
+                .build();
     }
 
 }

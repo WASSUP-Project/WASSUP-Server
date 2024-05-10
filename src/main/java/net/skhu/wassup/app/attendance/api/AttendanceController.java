@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.attendance.api.dto.RequestCode;
+import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceInfo;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
 import net.skhu.wassup.app.attendance.service.AttendanceService;
@@ -52,16 +53,17 @@ public class AttendanceController {
     public ResponseEntity<Void> saveAttendance(@RequestBody RequestCode requestCode, @PathVariable Long memberId) {
         String code = requestCode.code();
         attendanceService.saveAttendance(code, memberId);
+
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("rate/{groupId}")
+    @GetMapping("info/{groupId}")
     @Operation(
-            summary = "출석률 계산",
-            description = "출석률을 계산합니다."
+            summary = "출석률과 미출석 멤버 조회",
+            description = "금일 출석률과 미출석 멤버를 조회합니다."
     )
-    public ResponseEntity<Integer> calculateAttendanceRate(@PathVariable Long groupId) {
-        return ResponseEntity.ok(attendanceService.calculateAttendanceRate(groupId));
+    public ResponseEntity<ResponseAttendanceInfo> getAttendanceInfo(@PathVariable Long groupId) {
+        return ResponseEntity.ok(attendanceService.getAttendanceInfo(groupId));
     }
 
 }
