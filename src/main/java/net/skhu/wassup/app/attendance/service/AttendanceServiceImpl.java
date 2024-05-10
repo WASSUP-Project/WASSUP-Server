@@ -6,7 +6,6 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import net.skhu.wassup.app.attendance.api.dto.RequestAttendance;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
 import net.skhu.wassup.app.attendance.domain.Attendance;
@@ -45,18 +44,21 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public List<ResponseAttendanceMember> findMembers(RequestAttendance requestAttendance) {
-        Long groupId = getGroupId(requestAttendance.code());
-        String input = requestAttendance.phoneNumber();
+    public List<ResponseAttendanceMember> findMembers(String code, String phoneNumber) {
+        Long groupId = getGroupId(code);
 
-        return attendanceRepository.findByGroupMembersPhoneNumberLastFourDigits(groupId, input);
+        return attendanceRepository.findByGroupMembersPhoneNumberLastFourDigits(groupId, phoneNumber);
     }
 
     @Override
-    public void saveAttendance(Long memberId) {
+    public void saveAttendance(String code, Long memberId) {
+        Long groupId = getGroupId(code);
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
+
         Member member = memberRepository.findById(memberId)
+                .filter(m -> group.getMembers().contains(m))
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
-        Group group = member.getGroup();
 
         attendanceRepository.save(Attendance.builder()
                 .group(group)
