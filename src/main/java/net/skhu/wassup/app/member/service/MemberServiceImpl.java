@@ -2,11 +2,13 @@ package net.skhu.wassup.app.member.service;
 
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
+import static net.skhu.wassup.global.error.ErrorCode.UNAUTHORIZED_MEMBER;
 
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
 import net.skhu.wassup.app.member.api.dto.RequestMember;
+import net.skhu.wassup.app.member.api.dto.RequestUpdateMember;
 import net.skhu.wassup.app.member.api.dto.ResponseMember;
 import net.skhu.wassup.app.member.domain.JoinStatus;
 import net.skhu.wassup.app.member.domain.Member;
@@ -51,6 +53,23 @@ public class MemberServiceImpl implements MemberService {
                         .specifics(member.getSpecifics())
                         .build())
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+    }
+
+    private boolean isNotAcceptedMember(Long id) {
+        return memberRepository.existsMemberByIdAndJoinStatus(id, JoinStatus.WAITING);
+    }
+
+    @Override
+    @Transactional
+    public void updateMember(Long id, RequestUpdateMember requestUpdateMember) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+
+        if (isNotAcceptedMember(id)) {
+            throw new CustomException(UNAUTHORIZED_MEMBER);
+        }
+
+        member.update(requestUpdateMember);
     }
 
 }

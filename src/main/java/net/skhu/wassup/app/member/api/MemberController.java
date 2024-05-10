@@ -7,11 +7,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.member.api.dto.RequestMember;
+import net.skhu.wassup.app.member.api.dto.RequestUpdateMember;
 import net.skhu.wassup.app.member.api.dto.ResponseMember;
 import net.skhu.wassup.app.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +34,7 @@ public class MemberController {
     )
     public ResponseEntity<Void> join(@RequestBody RequestMember requestMember) {
         memberService.saveMember(requestMember);
+
         return ResponseEntity.status(OK).build();
     }
 
@@ -43,6 +46,18 @@ public class MemberController {
     @Parameter(name = "id", description = "멤버 ID")
     public ResponseEntity<ResponseMember> findById(@RequestParam Long id) {
         return ResponseEntity.status(OK).body(memberService.getMember(id));
+    }
+
+    @PutMapping
+    @Operation(
+            summary = "멤버 수정",
+            description = "멤버 정보를 수정합니다"
+    )
+    @Parameter(name = "id", description = "멤버 ID")
+    public ResponseEntity<Void> update(@RequestParam Long id, @RequestBody RequestUpdateMember requestUpdateMember) {
+        memberService.updateMember(id, requestUpdateMember);
+
+        return ResponseEntity.status(OK).build();
     }
 
 }

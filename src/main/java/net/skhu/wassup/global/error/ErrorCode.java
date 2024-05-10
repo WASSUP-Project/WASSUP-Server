@@ -21,7 +21,8 @@ public enum ErrorCode {
 
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "IV001", "이메일 형식이 올바르지 않습니다."),
 
-    UNAUTHORIZED_ADMIN(HttpStatus.UNAUTHORIZED, "UU001", "권한이 없습니다.");
+    UNAUTHORIZED_ADMIN(HttpStatus.UNAUTHORIZED, "UU001", "권한이 없습니다."),
+    UNAUTHORIZED_MEMBER(HttpStatus.UNAUTHORIZED, "UU002", "멤버 권한이 없습니다.");
 
     private final HttpStatus httpStatus;
 
