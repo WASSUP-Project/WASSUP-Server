@@ -53,4 +53,13 @@ public class AttendanceController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("rate/{groupId}")
+    @Operation(
+            summary = "출석률 계산",
+            description = "출석률을 계산합니다."
+    )
+    public ResponseEntity<Integer> calculateAttendanceRate(@PathVariable Long groupId) {
+        return ResponseEntity.ok(attendanceService.calculateAttendanceRate(groupId));
+    }
+
 }

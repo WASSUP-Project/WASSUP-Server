@@ -19,4 +19,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             """)
     List<ResponseAttendanceMember> findByGroupMembersPhoneNumberLastFourDigits(Long groupId, String lastFourDigits);
 
+    @Query("""
+            SELECT COUNT(a.id)
+            FROM Attendance a
+            WHERE a.group.id = :groupId
+            """)
+    int countByGroupAndStatus(Long groupId);
+
 }
