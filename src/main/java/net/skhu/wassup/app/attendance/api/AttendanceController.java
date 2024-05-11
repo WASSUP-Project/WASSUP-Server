@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/attendances")
-@Tag(name = "Attendance", description = "출석 관련 API")
+@Tag(name = "Attendance Controller", description = "출석 관련 API")
 public class AttendanceController {
 
     private final AttendanceService attendanceService;

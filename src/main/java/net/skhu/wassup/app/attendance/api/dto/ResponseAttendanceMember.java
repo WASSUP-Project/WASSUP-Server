@@ -11,7 +11,6 @@ public record ResponseAttendanceMember(
         Long memberId,
 
         @Schema(description = "멤버 이름")
-        String memberName
-) {
+        String memberName) {
 
 }
