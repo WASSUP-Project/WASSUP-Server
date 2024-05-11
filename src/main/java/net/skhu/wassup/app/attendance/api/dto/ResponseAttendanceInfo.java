@@ -6,6 +6,5 @@ import lombok.Builder;
 @Builder
 public record ResponseAttendanceInfo(
         int attendanceRate,
-        List<ResponseAttendanceMember> notAttendanceMembers
-) {
+        List<ResponseAttendanceMember> notAttendanceMembers) {
 }
