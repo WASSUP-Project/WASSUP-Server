@@ -6,6 +6,7 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceInfo;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
@@ -17,12 +18,18 @@ import net.skhu.wassup.app.group.domain.GroupRepository;
 import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.app.member.domain.MemberRepository;
 import net.skhu.wassup.global.error.exception.CustomException;
+import net.skhu.wassup.global.message.SMSMessageSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
+
+    private static final String MESSAGE_PREFIX = "WASSUP_";
+
+    private static final String SUCCESS_ATTENDANCE_MESSAGE = "%s의 출석이 완료되었습니다.";
 
     private final AttendanceCodeService attendanceCodeService;
 
@@ -31,6 +38,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final MemberRepository memberRepository;
 
     private final GroupRepository groupRepository;
+
+    private final SMSMessageSender smsMessageSender;
 
     @Override
     public ResponseCode generateAttendanceCode(Long groupId) {
@@ -51,6 +60,13 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceRepository.findByGroupMembersPhoneNumberLastFourDigits(groupId, phoneNumber);
     }
 
+    private void sendAttendanceMessage(Group group, Member member) {
+        String title = String.format(MESSAGE_PREFIX + group.getName());
+        String message = String.format(SUCCESS_ATTENDANCE_MESSAGE, member.getName());
+
+        smsMessageSender.send(member.getPhoneNumber(), title, message);
+    }
+
     @Override
     @Transactional
     public void saveAttendance(String code, Long memberId) {
@@ -61,6 +77,8 @@ public class AttendanceServiceImpl implements AttendanceService {
         Member member = memberRepository.findById(memberId)
                 .filter(m -> group.getMembers().contains(m))
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+
+        sendAttendanceMessage(group, member);
 
         attendanceRepository.save(Attendance.builder()
                 .group(group)

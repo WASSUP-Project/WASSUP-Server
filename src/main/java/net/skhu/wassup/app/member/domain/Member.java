@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import net.skhu.wassup.app.attendance.domain.Attendance;
 import net.skhu.wassup.app.common.BaseTimeEntity;
 import net.skhu.wassup.app.group.domain.Group;
@@ -28,7 +27,6 @@ import net.skhu.wassup.app.member.api.dto.RequestUpdateMember;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Slf4j
 @Table(name = "member_table")
 public class Member extends BaseTimeEntity {
 
