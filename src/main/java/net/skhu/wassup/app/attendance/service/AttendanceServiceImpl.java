@@ -16,7 +16,6 @@ import net.skhu.wassup.app.certification.AttendanceCodeService;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
 import net.skhu.wassup.app.member.domain.Member;
-import net.skhu.wassup.app.member.domain.MemberRepository;
 import net.skhu.wassup.global.error.exception.CustomException;
 import net.skhu.wassup.global.message.SMSMessageSender;
 import org.springframework.stereotype.Service;
@@ -34,8 +33,6 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceCodeService attendanceCodeService;
 
     private final AttendanceRepository attendanceRepository;
-
-    private final MemberRepository memberRepository;
 
     private final GroupRepository groupRepository;
 
@@ -60,6 +57,13 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceRepository.findByGroupMembersPhoneNumberLastFourDigits(groupId, phoneNumber);
     }
 
+    private Member findMemberById(Group group, Long memberId) {
+        return group.getMembers().stream()
+                .filter(m -> m.getId().equals(memberId))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+    }
+
     private void sendAttendanceMessage(Group group, Member member) {
         String title = MESSAGE_PREFIX + group.getName();
         String message = String.format(SUCCESS_ATTENDANCE_MESSAGE, member.getName());
@@ -74,9 +78,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
 
-        Member member = memberRepository.findById(memberId)
-                .filter(m -> group.getMembers().contains(m))
-                .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+        Member member = findMemberById(group, memberId);
 
         sendAttendanceMessage(group, member);
 
