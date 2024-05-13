@@ -27,9 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
 
-    private static final String SUCCESS_ATTENDANCE_MESSAGE = "%s의 출석이 완료되었습니다.";
-
     private static final String MESSAGE_PREFIX = "WASSUP_";
+
+    private static final String SUCCESS_ATTENDANCE_MESSAGE = "%s의 출석이 완료되었습니다.";
 
     private final AttendanceCodeService attendanceCodeService;
 
@@ -61,7 +61,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     private void sendAttendanceMessage(Group group, Member member) {
-        String title = MESSAGE_PREFIX + group.getName();
+        String title = String.format(MESSAGE_PREFIX + group.getName());
         String message = String.format(SUCCESS_ATTENDANCE_MESSAGE, member.getName());
 
         smsMessageSender.send(member.getPhoneNumber(), title, message);
