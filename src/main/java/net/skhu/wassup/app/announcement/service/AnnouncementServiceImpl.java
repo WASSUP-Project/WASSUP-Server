@@ -48,7 +48,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             throw new CustomException(UNAUTHORIZED_ADMIN);
         }
 
-        return announcementRepository.findByGroupId(groupId).stream()
+        return announcementRepository.findByGroupIdOrderByCreateDateDesc(groupId).stream()
                 .map(this::mapToResponseAnnouncement)
                 .toList();
     }
