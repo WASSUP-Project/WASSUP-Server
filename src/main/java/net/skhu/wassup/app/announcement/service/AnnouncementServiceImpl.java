@@ -4,7 +4,6 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.UNAUTHORIZED_ADMIN;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.announcement.api.dto.RequestAnnouncement;
 import net.skhu.wassup.app.announcement.api.dto.ResponseAnnouncement;
@@ -49,9 +48,9 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             throw new CustomException(UNAUTHORIZED_ADMIN);
         }
 
-        return announcementRepository.findByGroupId(groupId).stream()
+        return announcementRepository.findByGroupIdOrderByCreateDateDesc(groupId).stream()
                 .map(this::mapToResponseAnnouncement)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Group getGroupOrThrow(Long groupId) {
