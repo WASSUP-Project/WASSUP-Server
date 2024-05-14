@@ -2,19 +2,18 @@ package net.skhu.wassup.app.announcement.domain;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import net.skhu.wassup.app.common.BaseTimeEntity;
 import net.skhu.wassup.app.group.domain.Group;
 
 @Entity
@@ -22,7 +21,7 @@ import net.skhu.wassup.app.group.domain.Group;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "announcement_table")
-public class Announcement {
+public class Announcement extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -39,8 +38,11 @@ public class Announcement {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "announcement")
-    private List<SentHistory> sentHistories;
+    @Builder
+    public Announcement(String title, String content, Group group) {
+        this.title = title;
+        this.content = content;
+        this.group = group;
+    }
 
 }
