@@ -1,6 +1,7 @@
 package net.skhu.wassup.app.attendance.service;
 
 import static net.skhu.wassup.app.attendance.domain.Status.ATTENDANCE;
+import static net.skhu.wassup.app.member.domain.JoinStatus.ACCEPTED;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
@@ -59,7 +60,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private Member findMemberById(Group group, Long memberId) {
         return group.getMembers().stream()
-                .filter(m -> m.getId().equals(memberId))
+                .filter(m -> m.getId().equals(memberId) && m.getJoinStatus() == ACCEPTED)
                 .findFirst()
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
     }

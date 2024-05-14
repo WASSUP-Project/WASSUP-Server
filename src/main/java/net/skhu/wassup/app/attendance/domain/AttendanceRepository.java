@@ -26,6 +26,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             FROM Member m LEFT JOIN Attendance a
                 ON m.id = a.member.id
             WHERE m.group.id = :groupId
+            AND m.joinStatus = 1
             """)
     int getAttendanceRateByGroupId(Long groupId);
 
@@ -37,6 +38,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             LEFT JOIN Attendance a
                 ON m.id = a.member.id
             WHERE m.group.id = :groupId
+            AND m.joinStatus = 1
             AND a.id IS NULL
             """)
     List<ResponseAttendanceMember> getNotAttendanceMemberByGroupId(Long groupId);
