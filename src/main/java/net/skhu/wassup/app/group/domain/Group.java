@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.skhu.wassup.app.admin.domain.Admin;
+import net.skhu.wassup.app.announcement.domain.Announcement;
 import net.skhu.wassup.app.attendance.domain.Attendance;
 import net.skhu.wassup.app.common.BaseTimeEntity;
 import net.skhu.wassup.app.group.api.dto.RequestUpdateGroup;
@@ -67,6 +68,10 @@ public class Group extends BaseTimeEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "group", fetch = LAZY)
     private List<Attendance> attendances;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "group", fetch = LAZY)
+    private List<Announcement> announcements;
 
     public void update(RequestUpdateGroup requestUpdateGroup) {
         this.description =
