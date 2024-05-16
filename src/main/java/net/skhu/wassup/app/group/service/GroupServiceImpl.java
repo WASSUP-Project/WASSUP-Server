@@ -51,6 +51,17 @@ public class GroupServiceImpl implements GroupService {
                 .build());
     }
 
+    private ResponseGroup mapToResponseGroup(Group group) {
+        return ResponseGroup.builder()
+                .groupName(group.getName())
+                .groupDescription(group.getDescription())
+                .address(group.getAddress())
+                .businessNumber(group.getBusinessNumber())
+                .email(group.getEmail())
+                .imageUrl(group.getImageUrl())
+                .build();
+    }
+
     @Override
     @Transactional(readOnly = true)
     public ResponseGroup getGroup(Long id) {
@@ -63,6 +74,24 @@ public class GroupServiceImpl implements GroupService {
     @Transactional(readOnly = true)
     public List<ResponseMyGroup> getMyGroups(Long id) {
         return groupRepository.getMyGroups(id);
+    }
+
+    private boolean filterMembersByType(Member member, String type) {
+        return switch (type) {
+            case "waiting" -> member.getJoinStatus() == JoinStatus.WAITING;
+            case "accepted" -> member.getJoinStatus() == JoinStatus.ACCEPTED;
+            default -> true;
+        };
+    }
+
+    private ResponseMember mapToResponseMember(Member member) {
+        return ResponseMember.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .phoneNumber(member.getPhoneNumber())
+                .birth(member.getBirth())
+                .specifics(member.getSpecifics())
+                .build();
     }
 
     @Override
@@ -116,35 +145,6 @@ public class GroupServiceImpl implements GroupService {
 
     private boolean isNotUserGroupAdmin(Long id, Group group) {
         return !group.getAdmin().getId().equals(id);
-    }
-
-    private ResponseGroup mapToResponseGroup(Group group) {
-        return ResponseGroup.builder()
-                .groupName(group.getName())
-                .groupDescription(group.getDescription())
-                .address(group.getAddress())
-                .businessNumber(group.getBusinessNumber())
-                .email(group.getEmail())
-                .imageUrl(group.getImageUrl())
-                .build();
-    }
-
-    private ResponseMember mapToResponseMember(Member member) {
-        return ResponseMember.builder()
-                .id(member.getId())
-                .name(member.getName())
-                .phoneNumber(member.getPhoneNumber())
-                .birth(member.getBirth())
-                .specifics(member.getSpecifics())
-                .build();
-    }
-
-    private boolean filterMembersByType(Member member, String type) {
-        return switch (type) {
-            case "waiting" -> member.getJoinStatus() == JoinStatus.WAITING;
-            case "accepted" -> member.getJoinStatus() == JoinStatus.ACCEPTED;
-            default -> true;
-        };
     }
 
 }
