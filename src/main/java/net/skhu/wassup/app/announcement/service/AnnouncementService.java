@@ -6,8 +6,8 @@ import net.skhu.wassup.app.announcement.api.dto.ResponseAnnouncement;
 
 public interface AnnouncementService {
 
-    void writeAnnouncement(Long id, Long groupId, RequestAnnouncement requestAnnouncement);
+    List<String> writeAnnouncement(Long id, Long groupId, RequestAnnouncement requestAnnouncement);
 
     List<ResponseAnnouncement> getAnnouncement(Long id, Long groupId);
-    
+
 }
