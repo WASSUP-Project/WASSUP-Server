@@ -1,6 +1,7 @@
 package net.skhu.wassup.app.announcement.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import java.util.List;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/announcements")
-@Tag(name = "공지사항 관련 API")
+@Tag(name = "Announcement Controller", description = "공지사항 API")
 public class AnnouncementController {
 
     private final AnnouncementService announcementService;
@@ -29,12 +30,13 @@ public class AnnouncementController {
             summary = "공지사항 작성",
             description = "공지사항을 작성합니다."
     )
-    public ResponseEntity<Void> writeAnnouncement(Principal principal, @RequestParam Long id,
-                                                  @RequestBody RequestAnnouncement requestAnnouncement) {
+    @Parameter(name = "id", description = "그룹 ID", required = true)
+    public ResponseEntity<List<String>> writeAnnouncement(Principal principal, @RequestParam Long id,
+                                                          @RequestBody RequestAnnouncement requestAnnouncement) {
         Long adminId = Long.parseLong(principal.getName());
-        announcementService.writeAnnouncement(adminId, id, requestAnnouncement);
+        List<String> failedMembers = announcementService.writeAnnouncement(adminId, id, requestAnnouncement);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(failedMembers);
     }
 
     @GetMapping
@@ -42,6 +44,7 @@ public class AnnouncementController {
             summary = "공지사항 조회",
             description = "공지사항을 조회합니다."
     )
+    @Parameter(name = "id", description = "그룹 ID", required = true)
     public ResponseEntity<List<ResponseAnnouncement>> getAnnouncement(Principal principal, @RequestParam Long id) {
         Long adminId = Long.parseLong(principal.getName());
 
