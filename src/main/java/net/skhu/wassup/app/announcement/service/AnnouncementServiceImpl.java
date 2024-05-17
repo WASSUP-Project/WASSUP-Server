@@ -30,11 +30,14 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     private final SMSMessageSender smsMessageSender;
 
+    private boolean isMemberFailedToReceiveAnnouncement(Member member, RequestAnnouncement requestAnnouncement) {
+        return member.getJoinStatus().equals(ACCEPTED) && !isCheckSendStatus(member.getPhoneNumber(),
+                requestAnnouncement.title(), requestAnnouncement.content());
+    }
+
     private List<Member> getFailedMembers(Group group, RequestAnnouncement requestAnnouncement) {
         return group.getMembers().stream()
-                .filter(member -> member.getJoinStatus() == ACCEPTED &&
-                        (!isCheckSendStatus(member.getPhoneNumber(), requestAnnouncement.title(),
-                                requestAnnouncement.content())))
+                .filter(member -> isMemberFailedToReceiveAnnouncement(member, requestAnnouncement))
                 .toList();
     }
 

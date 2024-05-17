@@ -84,8 +84,7 @@ public class Member extends BaseTimeEntity {
 
     @Override
     public String toString() {
-        return "id = " + id +
-                ", name = '" + name;
+        return String.format("id=%d, name='%s'", id, name);
     }
-    
+
 }
