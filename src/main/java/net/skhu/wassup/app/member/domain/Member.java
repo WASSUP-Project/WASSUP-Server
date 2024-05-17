@@ -82,4 +82,9 @@ public class Member extends BaseTimeEntity {
         this.joinStatus = JoinStatus.ACCEPTED;
     }
 
+    @Override
+    public String toString() {
+        return String.format("id=%d, name='%s'", id, name);
+    }
+
 }

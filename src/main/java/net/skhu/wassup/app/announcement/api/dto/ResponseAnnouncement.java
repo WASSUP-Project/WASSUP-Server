@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
+@Schema(description = "공지사항 조회 응답")
 public record ResponseAnnouncement(
 
         @Schema(description = "공지사항 ID")
