@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
 import net.skhu.wassup.app.admin.api.dto.RequestVerify;
+import net.skhu.wassup.app.admin.api.dto.ResponseAccount;
 import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 import net.skhu.wassup.app.admin.service.AdminService;
@@ -94,6 +95,16 @@ public class AdminController {
         Long id = Long.parseLong(principal.getName());
 
         return ResponseEntity.status(OK).body(adminService.getAdmin(id));
+    }
+
+    @GetMapping("find/id")
+    @Operation(
+            summary = "아이디 찾기",
+            description = "전화번호로 관리자 아이디를 찾습니다."
+    )
+    public ResponseEntity<ResponseAccount> findAdminAccountId(@RequestParam String phone) {
+        adminService.certification(phone);
+        return ResponseEntity.status(OK).body(adminService.findAdminAccountId(phone));
     }
 
 }

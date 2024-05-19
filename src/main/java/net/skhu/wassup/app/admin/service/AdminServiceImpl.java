@@ -7,6 +7,7 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_CERTIFICATION_COD
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
+import net.skhu.wassup.app.admin.api.dto.ResponseAccount;
 import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 import net.skhu.wassup.app.admin.domain.Admin;
@@ -108,6 +109,15 @@ public class AdminServiceImpl implements AdminService {
                 .id(admin.getId())
                 .name(admin.getName())
                 .phoneNumber(admin.getPhoneNumber())
+                .build();
+    }
+
+    @Override
+    public ResponseAccount findAdminAccountId(String phoneNumber) {
+        return ResponseAccount.builder()
+                .adminId(adminRepository.findByPhoneNumber(phoneNumber)
+                        .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN))
+                        .getAdminId())
                 .build();
     }
 
