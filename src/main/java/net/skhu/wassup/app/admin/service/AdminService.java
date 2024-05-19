@@ -2,6 +2,7 @@ package net.skhu.wassup.app.admin.service;
 
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
+import net.skhu.wassup.app.admin.api.dto.ResponseAccount;
 import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 
@@ -18,5 +19,7 @@ public interface AdminService {
     ResponseLogin login(RequestLogin requestLogin);
 
     ResponseAdmin getAdmin(Long id);
+
+    ResponseAccount findAdminAccountId(String phoneNumber);
 
 }
