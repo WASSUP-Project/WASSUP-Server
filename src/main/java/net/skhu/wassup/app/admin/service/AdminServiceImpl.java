@@ -5,6 +5,7 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_ACCOUNT_ID_OR_PAS
 import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_CERTIFICATION_CODE;
 
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.admin.api.dto.RequestFindPassword;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
 import net.skhu.wassup.app.admin.api.dto.ResponseAccount;
@@ -113,12 +114,25 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    @Transactional
     public ResponseAccount findAdminAccountId(String phoneNumber) {
         return ResponseAccount.builder()
                 .adminId(adminRepository.findByPhoneNumber(phoneNumber)
                         .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN))
                         .getAdminId())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void updateAdminPassword(RequestFindPassword requestFindPassword) {
+        Admin admin = adminRepository.findByAdminId(requestFindPassword.adminId())
+                .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
+
+        String encodePassword = encryptionService.encrypt(requestFindPassword.newPassword());
+
+        admin.updatePassword(encodePassword);
+
     }
 
 }

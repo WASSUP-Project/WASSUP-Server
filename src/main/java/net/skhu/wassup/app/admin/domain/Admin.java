@@ -55,4 +55,8 @@ public class Admin extends BaseTimeEntity {
         this.phoneNumber = phoneNumber;
     }
 
+    public void updatePassword(String encodePassword) {
+        this.password = encodePassword;
+    }
+
 }

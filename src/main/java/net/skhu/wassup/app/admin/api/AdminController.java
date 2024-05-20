@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.admin.api.dto.RequestFindPassword;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
 import net.skhu.wassup.app.admin.api.dto.RequestVerify;
@@ -19,6 +20,7 @@ import net.skhu.wassup.global.error.exception.CustomException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -103,8 +105,18 @@ public class AdminController {
             description = "전화번호로 관리자 아이디를 찾습니다."
     )
     public ResponseEntity<ResponseAccount> findAdminAccountId(@RequestParam String phone) {
-        adminService.certification(phone);
         return ResponseEntity.status(OK).body(adminService.findAdminAccountId(phone));
+    }
+
+    @PutMapping("find/password")
+    @Operation(
+            summary = "비밀번호 재설정",
+            description = "관리자 비밀번호를 재설정합니다."
+    )
+    public ResponseEntity<Void> updateAdminPassword(@RequestBody RequestFindPassword requestFindPassword) {
+        adminService.updateAdminPassword(requestFindPassword);
+
+        return ResponseEntity.status(OK).build();
     }
 
 }
