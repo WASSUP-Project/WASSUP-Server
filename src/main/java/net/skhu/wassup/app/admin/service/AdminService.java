@@ -1,5 +1,6 @@
 package net.skhu.wassup.app.admin.service;
 
+import net.skhu.wassup.app.admin.api.dto.RequestFindPassword;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
 import net.skhu.wassup.app.admin.api.dto.ResponseAccount;
@@ -21,5 +22,7 @@ public interface AdminService {
     ResponseAdmin getAdmin(Long id);
 
     ResponseAccount findAdminAccountId(String phoneNumber);
+
+    void updateAdminPassword(RequestFindPassword requestFindPassword);
 
 }
