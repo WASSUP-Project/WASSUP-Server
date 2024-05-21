@@ -1,7 +1,11 @@
 package net.skhu.wassup.app.admin.service;
 
+import net.skhu.wassup.app.admin.api.dto.RequestAdminVerification;
+import net.skhu.wassup.app.admin.api.dto.RequestFindPassword;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
+import net.skhu.wassup.app.admin.api.dto.RequestVerify;
+import net.skhu.wassup.app.admin.api.dto.ResponseAccount;
 import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
 
@@ -18,5 +22,11 @@ public interface AdminService {
     ResponseLogin login(RequestLogin requestLogin);
 
     ResponseAdmin getAdmin(Long id);
+
+    ResponseAccount findAdminAccountId(RequestVerify requestVerify);
+
+    void certificationFindPassword(RequestAdminVerification requestAdminVerification);
+
+    void updateAdminPassword(RequestFindPassword requestFindPassword);
 
 }
