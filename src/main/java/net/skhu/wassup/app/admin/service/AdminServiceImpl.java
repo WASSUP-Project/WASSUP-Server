@@ -2,12 +2,15 @@ package net.skhu.wassup.app.admin.service;
 
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_ADMIN;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_ACCOUNT_ID_OR_PASSWORD;
+import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_ACCOUNT_ID_OR_PHONE_NUMBER;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_MATCH_CERTIFICATION_CODE;
 
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.admin.api.dto.RequestAdminVerification;
 import net.skhu.wassup.app.admin.api.dto.RequestFindPassword;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
+import net.skhu.wassup.app.admin.api.dto.RequestVerify;
 import net.skhu.wassup.app.admin.api.dto.ResponseAccount;
 import net.skhu.wassup.app.admin.api.dto.ResponseAdmin;
 import net.skhu.wassup.app.admin.api.dto.ResponseLogin;
@@ -115,13 +118,35 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseAccount findAdminAccountId(String phoneNumber) {
-        Admin admin = adminRepository.findByPhoneNumber(phoneNumber)
+    public ResponseAccount findAdminAccountId(RequestVerify requestVerify) {
+        verify(requestVerify.phoneNumber(), requestVerify.inputCertificationCode());
+        Admin admin = adminRepository.findByPhoneNumber(requestVerify.phoneNumber())
                 .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
 
         return ResponseAccount.builder()
                 .adminId(admin.getAdminId())
                 .build();
+    }
+
+    private boolean verifyPhoneNumberAndAdminAccountId(RequestAdminVerification requestAdminVerification) {
+        Admin admin = adminRepository.findByAdminId(requestAdminVerification.adminId())
+                .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
+
+        if (!ObjectUtils.nullSafeEquals(admin.getPhoneNumber(), requestAdminVerification.phoneNumber())) {
+            throw new CustomException(NOT_MATCH_ACCOUNT_ID_OR_PASSWORD);
+        }
+
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public void certificationFindPassword(RequestAdminVerification requestAdminVerification) {
+        if (!verifyPhoneNumberAndAdminAccountId(requestAdminVerification)) {
+            throw new CustomException(NOT_MATCH_ACCOUNT_ID_OR_PHONE_NUMBER);
+        }
+
+        certification(requestAdminVerification.phoneNumber());
     }
 
     @Override

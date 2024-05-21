@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import net.skhu.wassup.app.admin.api.dto.RequestAdminVerification;
 import net.skhu.wassup.app.admin.api.dto.RequestFindPassword;
 import net.skhu.wassup.app.admin.api.dto.RequestLogin;
 import net.skhu.wassup.app.admin.api.dto.RequestSignup;
@@ -99,13 +100,25 @@ public class AdminController {
         return ResponseEntity.status(OK).body(adminService.getAdmin(id));
     }
 
-    @GetMapping("find/id")
+    @PostMapping("find/id")
     @Operation(
             summary = "아이디 찾기",
             description = "전화번호로 관리자 아이디를 찾습니다."
     )
-    public ResponseEntity<ResponseAccount> findAdminAccountId(@RequestParam String phone) {
-        return ResponseEntity.status(OK).body(adminService.findAdminAccountId(phone));
+    public ResponseEntity<ResponseAccount> findAdminAccountId(@RequestBody RequestVerify requestVerify) {
+        return ResponseEntity.status(OK).body(adminService.findAdminAccountId(requestVerify));
+    }
+
+    @PostMapping("find/password/certification")
+    @Operation(
+            summary = "비밀번호 재설정 인증번호 전송",
+            description = "비밀번호 재설정을 위한 인증번호를 전송합니다."
+    )
+    public ResponseEntity<Void> certificationFindPassword(
+            @RequestBody RequestAdminVerification requestAdminVerification) {
+        adminService.certificationFindPassword(requestAdminVerification);
+
+        return ResponseEntity.status(OK).build();
     }
 
     @PutMapping("find/password")

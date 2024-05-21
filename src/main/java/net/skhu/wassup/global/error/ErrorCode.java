@@ -10,6 +10,7 @@ public enum ErrorCode {
 
     NOT_MATCH_CERTIFICATION_CODE(HttpStatus.BAD_REQUEST, "NM001", "인증번호가 일치하지 않습니다."),
     NOT_MATCH_ACCOUNT_ID_OR_PASSWORD(HttpStatus.BAD_REQUEST, "NM002", "아이디나 비밀번호가 일치하지 않습니다."),
+    NOT_MATCH_ACCOUNT_ID_OR_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "NM003", "아이디나 전화번호가 일치하지 않습니다."),
 
     DUPLICATE_ADMIN_ID(HttpStatus.BAD_REQUEST, "DP001", "이미 존재하는 아이디입니다."),
     DUPLICATE_GROUP_NAME(HttpStatus.BAD_REQUEST, "DP002", "이미 존재하는 그룹 이름입니다."),
