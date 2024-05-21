@@ -114,12 +114,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ResponseAccount findAdminAccountId(String phoneNumber) {
+        Admin admin = adminRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
+
         return ResponseAccount.builder()
-                .adminId(adminRepository.findByPhoneNumber(phoneNumber)
-                        .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN))
-                        .getAdminId())
+                .adminId(admin.getAdminId())
                 .build();
     }
 
@@ -132,7 +133,6 @@ public class AdminServiceImpl implements AdminService {
         String encodePassword = encryptionService.encrypt(requestFindPassword.newPassword());
 
         admin.updatePassword(encodePassword);
-
     }
 
 }
