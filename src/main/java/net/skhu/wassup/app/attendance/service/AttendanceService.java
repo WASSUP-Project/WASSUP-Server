@@ -13,6 +13,8 @@ public interface AttendanceService {
 
     void saveAttendance(String code, Long memberId);
 
+    void saveLeaving(String code, Long memberId);
+
     ResponseAttendanceInfo getAttendanceInfo(Long groupId);
 
 }

@@ -1,7 +1,9 @@
 package net.skhu.wassup.app.attendance.service;
 
 import static net.skhu.wassup.app.attendance.domain.Status.ATTENDANCE;
+import static net.skhu.wassup.app.attendance.domain.Status.LEAVING;
 import static net.skhu.wassup.app.member.domain.JoinStatus.ACCEPTED;
+import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_ATTENDANCE;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
@@ -13,12 +15,12 @@ import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
 import net.skhu.wassup.app.attendance.domain.Attendance;
 import net.skhu.wassup.app.attendance.domain.AttendanceRepository;
+import net.skhu.wassup.app.attendance.domain.Status;
 import net.skhu.wassup.app.certification.AttendanceCodeService;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
 import net.skhu.wassup.app.member.domain.Member;
 import net.skhu.wassup.global.error.exception.CustomException;
-import net.skhu.wassup.global.message.SMSMessageSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AttendanceServiceImpl implements AttendanceService {
 
-    private static final String MESSAGE_PREFIX = "WASSUP_";
+    private static final String SUCCESS_ATTENDANCE_MESSAGE = "%s(이)가 등원하였습니다.";
 
-    private static final String SUCCESS_ATTENDANCE_MESSAGE = "%s의 출석이 완료되었습니다.";
+    private static final String SUCCESS_LEAVING_MESSAGE = "%s(이)가 하원하였습니다.";
 
     private final AttendanceCodeService attendanceCodeService;
 
@@ -37,7 +39,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final GroupRepository groupRepository;
 
-    private final SMSMessageSender smsMessageSender;
+    private final AttendanceMessageService attendanceMessageService;
 
     @Override
     public ResponseCode generateAttendanceCode(Long groupId) {
@@ -65,29 +67,36 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
     }
 
-    private void sendAttendanceMessage(Group group, Member member) {
-        String title = String.format(MESSAGE_PREFIX + group.getName());
-        String message = String.format(SUCCESS_ATTENDANCE_MESSAGE, member.getName());
-
-        smsMessageSender.send(member.getPhoneNumber(), title, message);
-    }
-
-    @Override
-    @Transactional
-    public void saveAttendance(String code, Long memberId) {
+    private void saveStatus(String code, Long memberId, Status status, String messageTemplate) {
         Long groupId = getGroupId(code);
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
 
         Member member = findMemberById(group, memberId);
 
-        sendAttendanceMessage(group, member);
+        attendanceMessageService.sendMessage(group, member, messageTemplate);
 
         attendanceRepository.save(Attendance.builder()
                 .group(group)
                 .member(member)
-                .status(ATTENDANCE)
+                .status(status)
                 .build());
+    }
+
+    @Override
+    @Transactional
+    public void saveAttendance(String code, Long memberId) {
+        saveStatus(code, memberId, ATTENDANCE, SUCCESS_ATTENDANCE_MESSAGE);
+    }
+
+    @Override
+    @Transactional
+    public void saveLeaving(String code, Long memberId) {
+        if (!attendanceRepository.existsByMemberIdAndStatus(memberId, ATTENDANCE)) {
+            throw new CustomException(NOT_FOUND_ATTENDANCE);
+        }
+
+        saveStatus(code, memberId, LEAVING, SUCCESS_LEAVING_MESSAGE);
     }
 
     private int calculateAttendanceRate(Long groupId) {
