@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/announcements")
-@Tag(name = "Announcement Controller", description = "공지사항 API")
+@Tag(name = "Announcement Controller", description = "공지사항 관련 API")
 public class AnnouncementController {
 
     private final AnnouncementService announcementService;

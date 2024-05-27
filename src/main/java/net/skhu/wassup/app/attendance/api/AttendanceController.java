@@ -1,6 +1,7 @@
 package net.skhu.wassup.app.attendance.api;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,8 @@ public class AttendanceController {
             summary = "출석 시 뒷 번호 일치하는 멤버 리스트 조회",
             description = "출석 시 뒷 번호가 같은 멤버 리스트를 조회합니다."
     )
+    @Parameter(name = "code", description = "출석 코드")
+    @Parameter(name = "phoneNumber", description = "전화번호 뒷자리")
     public ResponseEntity<List<ResponseAttendanceMember>> findMembers(
             @RequestParam String code, @RequestParam String phoneNumber) {
         return ResponseEntity.ok(attendanceService.findMembers(code, phoneNumber));
@@ -53,6 +56,18 @@ public class AttendanceController {
     public ResponseEntity<Void> saveAttendance(@RequestBody RequestCode requestCode, @PathVariable Long memberId) {
         String code = requestCode.code();
         attendanceService.saveAttendance(code, memberId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("leaving/{memberId}")
+    @Operation(
+            summary = "하원 처리",
+            description = "하원을 처리합니다."
+    )
+    public ResponseEntity<Void> saveLeaving(@RequestBody RequestCode requestCode, @PathVariable Long memberId) {
+        String code = requestCode.code();
+        attendanceService.saveLeaving(code, memberId);
 
         return ResponseEntity.ok().build();
     }

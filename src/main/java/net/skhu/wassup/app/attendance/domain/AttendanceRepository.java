@@ -21,6 +21,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             """)
     List<ResponseAttendanceMember> findByGroupMembersPhoneNumberLastFourDigits(Long groupId, String lastFourDigits);
 
+    boolean existsByMemberIdAndStatus(Long memberId, Status status);
+
     @Query("""
             SELECT CASE WHEN COUNT(*) = 0 THEN 0 ELSE (COUNT(CASE WHEN a.status = 0 THEN 1 END) / COUNT(*)) * 100 END AS attendance_rate
             FROM Member m LEFT JOIN Attendance a
