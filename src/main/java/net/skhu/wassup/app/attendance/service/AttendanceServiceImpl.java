@@ -3,10 +3,13 @@ package net.skhu.wassup.app.attendance.service;
 import static net.skhu.wassup.app.attendance.domain.Status.ATTENDANCE;
 import static net.skhu.wassup.app.attendance.domain.Status.LEAVING;
 import static net.skhu.wassup.app.member.domain.JoinStatus.ACCEPTED;
+import static net.skhu.wassup.global.error.ErrorCode.EXPIRED_ATTENDANCE_CODE;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_ATTENDANCE;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +18,8 @@ import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
 import net.skhu.wassup.app.attendance.domain.Attendance;
 import net.skhu.wassup.app.attendance.domain.AttendanceRepository;
+import net.skhu.wassup.app.attendance.domain.OpenDays;
+import net.skhu.wassup.app.attendance.domain.OpenDaysRepository;
 import net.skhu.wassup.app.attendance.domain.Status;
 import net.skhu.wassup.app.certification.AttendanceCodeService;
 import net.skhu.wassup.app.group.domain.Group;
@@ -41,14 +46,39 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceMessageService attendanceMessageService;
 
+    private final OpenDaysRepository openDaysRepository;
+
+    private boolean isOpenDay(Long groupId, LocalDate createDate) {
+        return openDaysRepository.existsByGroupIdAndCreateDate(groupId, createDate);
+    }
+
+    private void saveOpenDays(Long groupId, LocalDateTime createDate) {
+        if (!isOpenDay(groupId, createDate.toLocalDate())) {
+            openDaysRepository.save(OpenDays.builder()
+                    .group(groupRepository.findById(groupId)
+                            .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP)))
+                    .build());
+        }
+    }
+
     @Override
     public ResponseCode generateAttendanceCode(Long groupId) {
+        saveOpenDays(groupId, LocalDateTime.now());
+
         return ResponseCode.builder()
                 .code(attendanceCodeService.createCode(groupId))
                 .build();
     }
 
+    private boolean isExpiredCode(String code) {
+        return attendanceCodeService.findGroupIdByCode(code) == null;
+    }
+
     private Long getGroupId(String code) {
+        if (isExpiredCode(code)) {
+            throw new CustomException(EXPIRED_ATTENDANCE_CODE);
+        }
+
         return attendanceCodeService.findGroupIdByCode(code);
     }
 
