@@ -23,6 +23,8 @@ public enum ErrorCode {
 
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "IV001", "이메일 형식이 올바르지 않습니다."),
 
+    EXPIRED_ATTENDANCE_CODE(HttpStatus.BAD_REQUEST, "EX001", "만료된 출석 코드입니다."),
+
     UNAUTHORIZED_ADMIN(HttpStatus.UNAUTHORIZED, "UU001", "권한이 없습니다."),
     UNAUTHORIZED_MEMBER(HttpStatus.UNAUTHORIZED, "UU002", "멤버 권한이 없습니다.");
 
