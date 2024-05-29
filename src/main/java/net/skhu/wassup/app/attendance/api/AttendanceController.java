@@ -48,6 +48,16 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.findMembers(code, phoneNumber));
     }
 
+    @GetMapping("leaving/members")
+    @Operation(
+            summary = "하원 시 뒷 번호 일치하는 멤버 리스트 조회",
+            description = "하원 시 뒷 번호가 같은 멤버 리스트를 조회합니다."
+    )
+    public ResponseEntity<List<ResponseAttendanceMember>> findLeavingMembers(
+            @RequestParam String code, @RequestParam String phoneNumber) {
+        return ResponseEntity.ok(attendanceService.findMembersForLeaving(code, phoneNumber));
+    }
+
     @PostMapping("{memberId}")
     @Operation(
             summary = "출석 처리",

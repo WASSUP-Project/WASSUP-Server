@@ -90,6 +90,14 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendanceRepository.findByGroupMembersPhoneNumberLastFourDigits(groupId, phoneNumber);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResponseAttendanceMember> findMembersForLeaving(String code, String phoneNumber) {
+        Long groupId = getGroupId(code);
+
+        return attendanceRepository.findByGroupMembersPhoneNumberLastFourDigitsForLeaving(groupId, phoneNumber);
+    }
+
     private Member findMemberById(Group group, Long memberId) {
         return group.getMembers().stream()
                 .filter(m -> m.getId().equals(memberId) && m.getJoinStatus() == ACCEPTED)
