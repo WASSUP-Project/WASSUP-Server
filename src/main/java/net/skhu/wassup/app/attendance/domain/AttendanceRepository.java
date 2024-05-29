@@ -21,6 +21,23 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             """)
     List<ResponseAttendanceMember> findByGroupMembersPhoneNumberLastFourDigits(Long groupId, String lastFourDigits);
 
+    @Query("""
+            SELECT new net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember(
+            m.id,
+            m.name
+            )
+            FROM Member m LEFT JOIN Attendance a
+                ON m.id = a.member.id
+            WHERE SUBSTRING(m.phoneNumber, LENGTH(m.phoneNumber) - 3) = :lastFourDigits
+                   AND m.joinStatus = 1
+                   AND a.id IS NOT NULL
+                   AND a.status = 0
+                   AND DATE(a.createDate) = DATE(NOW())
+                   AND m.group.id = :groupId
+            """)
+    List<ResponseAttendanceMember> findByGroupMembersPhoneNumberLastFourDigitsForLeaving(Long groupId,
+                                                                                         String lastFourDigits);
+
     boolean existsByMemberIdAndStatus(Long memberId, Status status);
 
     @Query("""

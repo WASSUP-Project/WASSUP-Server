@@ -11,6 +11,8 @@ public interface AttendanceService {
 
     List<ResponseAttendanceMember> findMembers(String code, String phoneNumber);
 
+    List<ResponseAttendanceMember> findMembersForLeaving(String code, String phoneNumber);
+
     void saveAttendance(String code, Long memberId);
 
     void saveLeaving(String code, Long memberId);
