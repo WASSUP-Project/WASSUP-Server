@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class AttendanceCodeService {
 
+    private static final int ONE_DAY_DURATION = 24 * 60 * 60 * 1000;
+
     private final ExpiringMap<String, Long> attendanceCode = ExpiringMap.builder()
             .variableExpiration()
             .expirationPolicy(ExpirationPolicy.CREATED)
@@ -19,8 +21,7 @@ public class AttendanceCodeService {
 
     private long getExpirationTime() {
         long currentTimeMillis = System.currentTimeMillis();
-        long midnightMillis = currentTimeMillis + (24 * 60 * 60 * 1000)
-                - (currentTimeMillis % (24 * 60 * 60 * 1000));
+        long midnightMillis = currentTimeMillis + ONE_DAY_DURATION - (currentTimeMillis % ONE_DAY_DURATION);
 
         return midnightMillis - currentTimeMillis;
     }

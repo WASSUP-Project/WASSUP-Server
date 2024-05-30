@@ -8,8 +8,6 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_ATTENDANCE;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,22 +46,27 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final OpenDaysRepository openDaysRepository;
 
-    private boolean isOpenDay(Long groupId, LocalDate createDate) {
-        return openDaysRepository.existsByGroupIdAndCreateDate(groupId, createDate);
+    private boolean isOpenDay(Long groupId) {
+        return openDaysRepository.existsByGroupIdAndCreateDate(groupId);
     }
 
-    private void saveOpenDays(Long groupId, LocalDateTime createDate) {
-        if (!isOpenDay(groupId, createDate.toLocalDate())) {
-            openDaysRepository.save(OpenDays.builder()
-                    .group(groupRepository.findById(groupId)
-                            .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP)))
-                    .build());
+    private void saveNewOpenDay(Long groupId) {
+        Group group = findGroupById(groupId);
+        openDaysRepository.save(OpenDays.builder()
+                .group(group)
+                .build());
+    }
+
+    private void saveOpenDaysIfNotExists(Long groupId) {
+        if (!isOpenDay(groupId)) {
+            saveNewOpenDay(groupId);
         }
     }
 
     @Override
+    @Transactional
     public ResponseCode generateAttendanceCode(Long groupId) {
-        saveOpenDays(groupId, LocalDateTime.now());
+        saveOpenDaysIfNotExists(groupId);
 
         return ResponseCode.builder()
                 .code(attendanceCodeService.createCode(groupId))
@@ -105,20 +108,27 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
     }
 
-    private void saveStatus(String code, Long memberId, Status status, String messageTemplate) {
-        Long groupId = getGroupId(code);
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
-
-        Member member = findMemberById(group, memberId);
-
+    private void sendAttendanceMessage(Group group, Member member, String messageTemplate) {
         attendanceMessageService.sendMessage(group, member, messageTemplate);
+    }
 
+    private void saveAttendanceRecord(Group group, Member member, Status status) {
         attendanceRepository.save(Attendance.builder()
                 .group(group)
                 .member(member)
                 .status(status)
                 .build());
+    }
+
+    private void saveStatus(String code, Long memberId, Status status, String messageTemplate) {
+        Long groupId = getGroupId(code);
+
+        Group group = findGroupById(groupId);
+        Member member = findMemberById(group, memberId);
+
+        sendAttendanceMessage(group, member, messageTemplate);
+
+        saveAttendanceRecord(group, member, status);
     }
 
     @Override
@@ -152,6 +162,11 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .attendanceRate(calculateAttendanceRate(groupId))
                 .notAttendanceMembers(getNotAttendanceMembers(groupId))
                 .build();
+    }
+
+    private Group findGroupById(Long groupId) {
+        return groupRepository.findById(groupId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
     }
 
 }
