@@ -28,7 +28,7 @@ public class OpenDays extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
-    
+
     @Builder
     public OpenDays(Group group) {
         this.group = group;
