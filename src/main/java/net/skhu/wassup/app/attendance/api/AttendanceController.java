@@ -38,8 +38,8 @@ public class AttendanceController {
 
     @GetMapping("members")
     @Operation(
-            summary = "출석 시 뒷 번호 일치하는 멤버 리스트 조회",
-            description = "출석 시 뒷 번호가 같은 멤버 리스트를 조회합니다."
+            summary = "등원 시 뒷 번호 일치하는 멤버 리스트 조회",
+            description = "등원 시 뒷 번호가 같은 멤버 리스트를 조회합니다."
     )
     @Parameter(name = "code", description = "출석 코드")
     @Parameter(name = "phoneNumber", description = "전화번호 뒷자리")
@@ -53,6 +53,8 @@ public class AttendanceController {
             summary = "하원 시 뒷 번호 일치하는 멤버 리스트 조회",
             description = "하원 시 뒷 번호가 같은 멤버 리스트를 조회합니다."
     )
+    @Parameter(name = "code", description = "출석 코드")
+    @Parameter(name = "phoneNumber", description = "전화번호 뒷자리")
     public ResponseEntity<List<ResponseAttendanceMember>> findLeavingMembers(
             @RequestParam String code, @RequestParam String phoneNumber) {
         return ResponseEntity.ok(attendanceService.findMembersForLeaving(code, phoneNumber));
@@ -60,8 +62,8 @@ public class AttendanceController {
 
     @PostMapping("{memberId}")
     @Operation(
-            summary = "출석 처리",
-            description = "출석을 처리합니다."
+            summary = "등원 처리",
+            description = "등원을 처리합니다."
     )
     public ResponseEntity<Void> saveAttendance(@RequestBody RequestCode requestCode, @PathVariable Long memberId) {
         String code = requestCode.code();
