@@ -1,9 +1,11 @@
 package net.skhu.wassup.app.attendance.service;
 
 import java.util.List;
+import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceGroupMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceInfo;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
+import net.skhu.wassup.app.attendance.domain.Status;
 
 public interface AttendanceService {
 
@@ -18,5 +20,9 @@ public interface AttendanceService {
     void saveLeaving(String code, Long memberId);
 
     ResponseAttendanceInfo getAttendanceInfo(Long groupId);
+
+    List<ResponseAttendanceGroupMember> getAttendanceMembers(Long groupId);
+
+    void updateAttendanceStatus(Long memberId, Status status);
 
 }
