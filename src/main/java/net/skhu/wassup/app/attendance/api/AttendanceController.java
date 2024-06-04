@@ -6,14 +6,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import net.skhu.wassup.app.attendance.api.dto.RequestCode;
+import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceGroupMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceInfo;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
+import net.skhu.wassup.app.attendance.domain.Status;
 import net.skhu.wassup.app.attendance.service.AttendanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -93,4 +96,23 @@ public class AttendanceController {
         return ResponseEntity.ok(attendanceService.getAttendanceInfo(groupId));
     }
 
+    @GetMapping("members/{groupId}")
+    @Operation(
+            summary = "그룹 멤버 출석 상태 조회",
+            description = "그룹 멤버의 출석 상태를 조회합니다."
+    )
+    public ResponseEntity<List<ResponseAttendanceGroupMember>> getAttendanceMembers(@PathVariable Long groupId) {
+        return ResponseEntity.ok(attendanceService.getAttendanceMembers(groupId));
+    }
+
+    @PutMapping("members/{memberId}")
+    @Operation(
+            summary = "출석 상태 변경",
+            description = "멤버의 출석 상태를 변경합니다."
+    )
+    public ResponseEntity<Void> updateAttendanceStatus(@PathVariable Long memberId, @RequestParam Status status) {
+        attendanceService.updateAttendanceStatus(memberId, status);
+
+        return ResponseEntity.ok().build();
+    }
 }
