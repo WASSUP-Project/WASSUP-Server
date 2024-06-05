@@ -1,5 +1,6 @@
 package net.skhu.wassup.app.attendance.service;
 
+import static net.skhu.wassup.app.attendance.domain.Status.ABSENCE;
 import static net.skhu.wassup.app.attendance.domain.Status.ATTENDANCE;
 import static net.skhu.wassup.app.attendance.domain.Status.LEAVING;
 import static net.skhu.wassup.app.member.domain.JoinStatus.ACCEPTED;
@@ -8,9 +9,12 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_ATTENDANCE;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_GROUP;
 import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceGroupMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceInfo;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import net.skhu.wassup.app.attendance.api.dto.ResponseCode;
@@ -23,6 +27,7 @@ import net.skhu.wassup.app.certification.AttendanceCodeService;
 import net.skhu.wassup.app.group.domain.Group;
 import net.skhu.wassup.app.group.domain.GroupRepository;
 import net.skhu.wassup.app.member.domain.Member;
+import net.skhu.wassup.app.member.domain.MemberRepository;
 import net.skhu.wassup.global.error.exception.CustomException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +46,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceRepository attendanceRepository;
 
     private final GroupRepository groupRepository;
+
+    private final MemberRepository memberRepository;
 
     private final AttendanceMessageService attendanceMessageService;
 
@@ -162,6 +169,57 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .attendanceRate(calculateAttendanceRate(groupId))
                 .notAttendanceMembers(getNotAttendanceMembers(groupId))
                 .build();
+    }
+
+    private Status getStatus(Member member) {
+        return attendanceRepository.findByMemberIdOrderByCreateDateDesc(member.getId())
+                .stream()
+                .filter(attendance -> attendance.getCreateDate().toLocalDate().isEqual(LocalDate.now()))
+                .findFirst()
+                .map(Attendance::getStatus)
+                .orElse(ABSENCE);
+    }
+
+    private ResponseAttendanceGroupMember convertToResponseAttendanceGroupMember(Member member) {
+        return ResponseAttendanceGroupMember.builder()
+                .memberId(member.getId())
+                .memberName(member.getName())
+                .status(getStatus(member))
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResponseAttendanceGroupMember> getAttendanceMembers(Long groupId) {
+        Group group = findGroupById(groupId);
+
+        return group.getMembers().stream()
+                .map(this::convertToResponseAttendanceGroupMember)
+                .collect(Collectors.toList());
+    }
+
+    private Attendance createNewAttendance(Long memberId, Status status) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(NOT_FOUND_MEMBER));
+        Group group = member.getGroup();
+
+        return Attendance.builder()
+                .member(member)
+                .group(group)
+                .status(status)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void updateAttendanceStatus(Long memberId, Status status) {
+        Attendance attendance = attendanceRepository.findByMemberIdOrderByCreateDateDesc(memberId)
+                .filter(a -> a.getCreateDate().toLocalDate().isEqual(LocalDate.now()))
+                .orElseGet(() -> createNewAttendance(memberId, status));
+
+        attendance.updateStatus(status);
+
+        attendanceRepository.save(attendance);
     }
 
     private Group findGroupById(Long groupId) {

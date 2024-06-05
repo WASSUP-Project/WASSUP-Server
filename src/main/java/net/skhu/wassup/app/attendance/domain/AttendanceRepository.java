@@ -1,6 +1,7 @@
 package net.skhu.wassup.app.attendance.domain;
 
 import java.util.List;
+import java.util.Optional;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -36,7 +37,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                   AND DATE(a.createDate) = DATE(NOW())
                   AND m.group.id = :groupId
                   AND a2.member.id IS NULL
-             """)
+            """)
     List<ResponseAttendanceMember> findByGroupMembersPhoneNumberLastFourDigitsForLeaving(Long groupId,
                                                                                          String lastFourDigits);
 
@@ -68,5 +69,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                 AND a.id IS NULL
             """)
     List<ResponseAttendanceMember> getNotAttendanceMemberByGroupId(Long groupId);
+
+    Optional<Attendance> findByMemberIdOrderByCreateDateDesc(Long memberId);
 
 }
