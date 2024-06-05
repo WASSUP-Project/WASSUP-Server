@@ -18,7 +18,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                 ON m.id = a.member.id
             WHERE SUBSTRING(m.phoneNumber, LENGTH(m.phoneNumber) - 3) = :lastFourDigits
                   AND m.joinStatus = 1
-                  AND a.id IS NULL
+                  AND a.id IS NULL OR a.status = 1
+                  AND DATE(a.createDate) = DATE(NOW())
                   AND m.group.id = :groupId
             """)
     List<ResponseAttendanceMember> findByGroupMembersPhoneNumberLastFourDigits(Long groupId, String lastFourDigits);
