@@ -41,7 +41,13 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     List<ResponseAttendanceMember> findByGroupMembersPhoneNumberLastFourDigitsForLeaving(Long groupId,
                                                                                          String lastFourDigits);
 
-    boolean existsByMemberIdAndStatus(Long memberId, Status status);
+    @Query("""
+            SELECT a
+            FROM Attendance a
+            WHERE a.member.id = :memberId
+            AND DATE(a.createDate) = DATE(NOW())
+            """)
+    Optional<Attendance> findByMemberIdToday(Long memberId);
 
     @Query("""
             SELECT CASE WHEN COUNT(m.id) = 0 THEN 0
@@ -50,7 +56,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             LEFT JOIN Attendance a
                 ON m.id = a.member.id
                 AND DATE(a.createDate) = DATE(NOW())
-                AND a.status = 0
+                AND (a.status = 0 OR a.status = 3)
             WHERE m.group.id = :groupId
                 AND m.joinStatus = 1
             """)
@@ -66,7 +72,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
                 ON m.id = a.member.id
             WHERE m.group.id = :groupId
                 AND m.joinStatus = 1
-                AND a.id IS NULL
+                AND (a.id IS NULL OR a.status = 1)
             """)
     List<ResponseAttendanceMember> getNotAttendanceMemberByGroupId(Long groupId);
 

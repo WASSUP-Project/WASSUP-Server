@@ -135,7 +135,18 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         sendAttendanceMessage(group, member, messageTemplate);
 
-        saveAttendanceRecord(group, member, status);
+        attendanceRepository.findByMemberIdToday(memberId)
+                .ifPresentOrElse(attendance -> {
+                    if (checkAttendanceStatus(attendance, status)) {
+                        attendance.updateStatus(status);
+                        return;
+                    }
+                    throw new CustomException(NOT_FOUND_ATTENDANCE);
+                }, () -> saveAttendanceRecord(group, member, status));
+    }
+
+    private boolean checkAttendanceStatus(Attendance attendance, Status status) {
+        return attendance.getStatus() != status;
     }
 
     @Override
@@ -147,10 +158,6 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     @Transactional
     public void saveLeaving(String code, Long memberId) {
-        if (!attendanceRepository.existsByMemberIdAndStatus(memberId, ATTENDANCE)) {
-            throw new CustomException(NOT_FOUND_ATTENDANCE);
-        }
-
         saveStatus(code, memberId, LEAVING, SUCCESS_LEAVING_MESSAGE);
     }
 
