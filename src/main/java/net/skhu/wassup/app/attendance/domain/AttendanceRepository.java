@@ -51,12 +51,11 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     @Query("""
             SELECT CASE WHEN COUNT(m.id) = 0 THEN 0
-                ELSE (COUNT(CASE WHEN a.status = 0 THEN 1 END) * 100 / COUNT(m.id)) END AS attendance_rate
+                ELSE (COUNT(CASE WHEN a.status = 0 OR a.status = 3 THEN 1 END) * 100 / COUNT(m.id)) END AS attendance_rate
             FROM Member m
             LEFT JOIN Attendance a
                 ON m.id = a.member.id
                 AND DATE(a.createDate) = DATE(NOW())
-                AND (a.status = 0 OR a.status = 3)
             WHERE m.group.id = :groupId
                 AND m.joinStatus = 1
             """)
