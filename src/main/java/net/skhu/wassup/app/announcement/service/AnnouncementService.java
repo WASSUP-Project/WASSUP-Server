@@ -10,4 +10,6 @@ public interface AnnouncementService {
 
     List<ResponseAnnouncement> getAnnouncement(Long id, Long groupId);
 
+    void writeAnnouncementToMember(Long id, Long groupId, Long memberId, RequestAnnouncement requestAnnouncement);
+
 }
