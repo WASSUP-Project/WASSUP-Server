@@ -229,6 +229,22 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendanceRepository.save(attendance);
     }
 
+    @Override
+    public void updateAllAttendanceStatus(String code, Status status) {
+        Long groupId = getGroupId(code);
+
+        Group group = findGroupById(groupId);
+
+        List<Member> members = group.getMembers();
+
+        String messageTemplate = (status == ATTENDANCE) ? SUCCESS_ATTENDANCE_MESSAGE : SUCCESS_LEAVING_MESSAGE;
+
+        members.forEach(member -> {
+            updateAttendanceStatus(member.getId(), status);
+            sendAttendanceMessage(group, member, messageTemplate);
+        });
+    }
+
     private Group findGroupById(Long groupId) {
         return groupRepository.findById(groupId)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_GROUP));
