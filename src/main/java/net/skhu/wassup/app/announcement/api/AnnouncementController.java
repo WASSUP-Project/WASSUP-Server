@@ -11,6 +11,7 @@ import net.skhu.wassup.app.announcement.api.dto.ResponseAnnouncement;
 import net.skhu.wassup.app.announcement.service.AnnouncementService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +50,22 @@ public class AnnouncementController {
         Long adminId = Long.parseLong(principal.getName());
 
         return ResponseEntity.ok(announcementService.getAnnouncement(adminId, id));
+    }
+
+    @PostMapping("/{memberId}")
+    @Operation(
+            summary = "멤버 개별 공지사항 전송",
+            description = "멤버 개별 공지사항을 전송합니다."
+    )
+    @Parameter(name = "groupId", description = "그룹 ID", required = true)
+    @Parameter(name = "memberId", description = "멤버 ID", required = true)
+    public ResponseEntity<Void> writeAnnouncementToMember(Principal principal, @PathVariable Long memberId,
+                                                          @RequestParam Long groupId,
+                                                          @RequestBody RequestAnnouncement requestAnnouncement) {
+        Long adminId = Long.parseLong(principal.getName());
+        announcementService.writeAnnouncementToMember(adminId, groupId, memberId, requestAnnouncement);
+
+        return ResponseEntity.ok().build();
     }
 
 }

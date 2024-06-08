@@ -18,7 +18,7 @@ public enum ErrorCode {
 
     NOT_FOUND_ADMIN(HttpStatus.NOT_FOUND, "NF001", "존재하지 않는 관리자입니다."),
     NOT_FOUND_GROUP(HttpStatus.NOT_FOUND, "NF002", "그룹 정보가 존재하지 않습니다."),
-    NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "NF003", "회원 정보가 존재하지 않습니다."),
+    NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "NF003", "멤버 정보가 존재하지 않습니다."),
     NOT_FOUND_ATTENDANCE(HttpStatus.NOT_FOUND, "NF004", "출석 정보가 존재하지 않습니다."),
 
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "IV001", "이메일 형식이 올바르지 않습니다."),
