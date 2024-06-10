@@ -20,6 +20,7 @@ public enum ErrorCode {
     NOT_FOUND_GROUP(HttpStatus.NOT_FOUND, "NF002", "그룹 정보가 존재하지 않습니다."),
     NOT_FOUND_MEMBER(HttpStatus.NOT_FOUND, "NF003", "멤버 정보가 존재하지 않습니다."),
     NOT_FOUND_ATTENDANCE(HttpStatus.NOT_FOUND, "NF004", "출석 정보가 존재하지 않습니다."),
+    NOT_FOUND_ATTENDANCE_STATUS(HttpStatus.NOT_FOUND, "NF005", "존재하지 않는 출석 상태입니다."),
 
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "IV001", "이메일 형식이 올바르지 않습니다."),
 
