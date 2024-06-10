@@ -25,6 +25,6 @@ public interface AttendanceService {
 
     void updateAttendanceStatus(Long memberId, Status status);
 
-    void updateAllAttendanceStatus(String code, Status status);
+    void updateAllAttendanceStatus(Long groupId, Status status);
 
 }

@@ -230,9 +230,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public void updateAllAttendanceStatus(String code, Status status) {
-        Long groupId = getGroupId(code);
-
+    public void updateAllAttendanceStatus(Long groupId, Status status) {
         Group group = findGroupById(groupId);
 
         List<Member> members = group.getMembers();
