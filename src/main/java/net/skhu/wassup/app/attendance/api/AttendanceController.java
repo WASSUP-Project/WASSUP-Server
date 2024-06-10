@@ -121,12 +121,12 @@ public class AttendanceController {
             summary = "전체 출석 상태 변경",
             description = "멤버의 전체 출석 상태를 변경합니다."
     )
-    public ResponseEntity<Void> updateAllAttendanceStatus(@RequestParam int statusId,
-                                                          @RequestBody RequestCode requestCode) {
-        String code = requestCode.code();
+    @Parameter(name = "id", description = "그룹 ID")
+    @Parameter(name = "statusId", description = "출석 상태", example = "0 or 3")
+    public ResponseEntity<Void> updateAllAttendanceStatus(@RequestParam Long id, @RequestParam int statusId) {
         Status status = Status.of(statusId);
 
-        attendanceService.updateAllAttendanceStatus(code, status);
+        attendanceService.updateAllAttendanceStatus(id, status);
 
         return ResponseEntity.ok().build();
     }
