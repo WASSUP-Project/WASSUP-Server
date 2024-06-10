@@ -109,11 +109,13 @@ public class AdminServiceImpl implements AdminService {
         Admin admin = adminRepository.findById(id)
                 .orElseThrow(() -> new CustomException(NOT_FOUND_ADMIN));
 
-        return ResponseAdmin.builder()
-                .id(admin.getId())
-                .name(admin.getName())
-                .phoneNumber(admin.getPhoneNumber())
-                .build();
+        int groupCount = admin.getGroups().size();
+        int memberCount = admin.getGroups().stream()
+                .mapToInt(group -> group.getMembers().size())
+                .sum();
+
+        return ResponseAdmin.of(admin.getId(), admin.getName(), admin.getPhoneNumber(), admin.getCreateDate(),
+                groupCount, memberCount);
     }
 
     @Override
