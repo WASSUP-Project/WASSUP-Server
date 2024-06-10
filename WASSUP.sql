@@ -5,7 +5,10 @@ CREATE TABLE `admin`
     `admin_account_id` VARCHAR(255) NOT NULL COMMENT '관리자 ID',
     `password`         VARCHAR(255) NOT NULL,
     `name`             VARCHAR(255) NOT NULL,
-    `phone_number`     VARCHAR(255) NOT NULL
+    `phone_number`     VARCHAR(255) NOT NULL,
+    `create_date`      DATETIME     NOT NULL COMMENT '생성 시간',
+    `update_date`      DATETIME     NOT NULL COMMENT '수정 시간'
+
 );
 
 -- group 테이블
@@ -18,16 +21,22 @@ CREATE TABLE `group`
     `business_number` VARCHAR(255) COMMENT '사업자 번호는 선택',
     `email`           VARCHAR(255) NOT NULL,
     `image_url`       VARCHAR(255),
-    `user_id`         INT          NOT NULL COMMENT '그룹에 해당하는 유저 ID'
+    `user_id`         INT          NOT NULL COMMENT '그룹에 해당하는 유저 ID',
+    `create_date`     DATETIME     NOT NULL COMMENT '생성 시간',
+    `update_date`     DATETIME     NOT NULL COMMENT '수정 시간'
+
 );
 
 -- announcement 테이블
 CREATE TABLE `announcement`
 (
-    `id`       INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto Increment',
-    `title`    VARCHAR(255) NOT NULL,
-    `content`  TEXT         NOT NULL,
-    `group_id` INT          NOT NULL
+    `id`          INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto Increment',
+    `title`       VARCHAR(255) NOT NULL,
+    `content`     TEXT         NOT NULL,
+    `group_id`    INT          NOT NULL,
+    `create_date` DATETIME     NOT NULL COMMENT '생성 시간',
+    `update_date` DATETIME     NOT NULL COMMENT '수정 시간'
+
 );
 
 -- member 테이블
@@ -40,24 +49,28 @@ CREATE TABLE `member`
     `birth`           DATE                         NOT NULL COMMENT '생년월일',
     `field`           VARCHAR(255) COMMENT '특이사항',
     `status`          ENUM ('WAITING', 'ACCEPTED') NOT NULL DEFAULT 'WAITING' COMMENT '가입 상태 (대기중, 완료)',
-    `announcement_id` INT                          NOT NULL COMMENT '공지사항 ID'
+    `announcement_id` INT                          NOT NULL COMMENT '공지사항 ID',
+    `create_date`     DATETIME                     NOT NULL COMMENT '생성 시간',
+    `update_date`     DATETIME                     NOT NULL COMMENT '수정 시간'
+
 );
 
 -- attendance 테이블
 CREATE TABLE `attendance`
 (
     `id`          INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto Increment',
-    `status`      ENUM ('ATTENDANCE', 'ABSENCE', 'SICK_LEAVE', 'OTHER') NOT NULL COMMENT '출석, 결석, 병결, 기타',
-    `created_at`  DATETIME                                              NOT NULL COMMENT '생성 시간',
-    `modified_at` DATETIME                                              NOT NULL COMMENT '수정 시간',
-    `member_id`   INT                                                   NOT NULL,
-    `group_id`    INT                                                   NOT NULL
+    `status`      ENUM ('ATTENDANCE', 'ABSENCE', 'ILLNESS', 'LEAVING') NOT NULL COMMENT '등원, 결석, 병결, 하원',
+    `create_date` DATETIME                                             NOT NULL COMMENT '생성 시간',
+    `update_date` DATETIME                                             NOT NULL COMMENT '수정 시간',
+    `member_id`   INT                                                  NOT NULL,
+    `group_id`    INT                                                  NOT NULL
 );
 
 -- open_days 테이블
 CREATE TABLE `open_days`
 (
     `id`          INT AUTO_INCREMENT PRIMARY KEY COMMENT 'Auto Increment',
-    `create_date` DATE NOT NULL COMMENT '생성 날짜',
-    `group_id`    INT  NOT NULL COMMENT '그룹 ID'
+    `create_date` DATETIME NOT NULL COMMENT '생성 시간',
+    `update_date` DATETIME NOT NULL COMMENT '수정 시간',
+    `group_id`    INT      NOT NULL COMMENT '그룹 ID'
 );
