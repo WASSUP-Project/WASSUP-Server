@@ -11,7 +11,6 @@ import static net.skhu.wassup.global.error.ErrorCode.NOT_FOUND_MEMBER;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.skhu.wassup.app.attendance.api.dto.ResponseAttendanceGroupMember;
@@ -201,8 +200,9 @@ public class AttendanceServiceImpl implements AttendanceService {
         Group group = findGroupById(groupId);
 
         return group.getMembers().stream()
+                .filter(member -> member.getJoinStatus() == ACCEPTED)
                 .map(this::convertToResponseAttendanceGroupMember)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Attendance createNewAttendance(Long memberId, Status status) {
