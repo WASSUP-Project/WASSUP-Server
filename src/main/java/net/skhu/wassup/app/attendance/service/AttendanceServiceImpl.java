@@ -201,6 +201,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         Group group = findGroupById(groupId);
 
         return group.getMembers().stream()
+                .filter(member -> member.getJoinStatus() == ACCEPTED)
                 .map(this::convertToResponseAttendanceGroupMember)
                 .collect(Collectors.toList());
     }
