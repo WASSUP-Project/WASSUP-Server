@@ -227,6 +227,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendance.updateStatus(status);
 
         attendanceRepository.save(attendance);
+        log.info("Update Attendance Status : {} {}", memberId, status);
     }
 
     @Override
