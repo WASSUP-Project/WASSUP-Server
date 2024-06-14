@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.NurigoApp;
 import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
 import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,7 @@ public class SMSMessageSender implements MessageSender {
         msg.setTo(to);
         msg.setText("[" + title + "]\n\n" + message);
 
-//        messageService.sendOne(new SingleMessageSendingRequest(msg));
+        messageService.sendOne(new SingleMessageSendingRequest(msg));
         log.info("SMS Send to : {} Message : {} {}", to, title, message);
     }
 
