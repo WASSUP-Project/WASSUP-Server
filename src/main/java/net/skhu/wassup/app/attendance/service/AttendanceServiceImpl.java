@@ -230,17 +230,21 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
+    @Transactional
     public void updateAllAttendanceStatus(Long groupId, Status status) {
         Group group = findGroupById(groupId);
 
-        List<Member> members = group.getMembers();
+        List<Member> members = group.getMembers()
+                .stream()
+                .filter(member -> member.getJoinStatus() == ACCEPTED)
+                .toList();
 
         String messageTemplate = (status == ATTENDANCE) ? SUCCESS_ATTENDANCE_MESSAGE : SUCCESS_LEAVING_MESSAGE;
 
-        members.forEach(member -> {
+        for (Member member : members) {
             updateAttendanceStatus(member.getId(), status);
             sendAttendanceMessage(group, member, messageTemplate);
-        });
+        }
     }
 
     private Group findGroupById(Long groupId) {
