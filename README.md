@@ -60,7 +60,7 @@
 - **Framework** : Spring Boot 3.2.3
 - **IDE** : IntelliJ IDEA
 - **Database** : MySQL
-
+ 
 ## 📌 실행 방법
 
 ```
