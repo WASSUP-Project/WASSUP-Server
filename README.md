@@ -1,6 +1,7 @@
-## WASSUP-Server
+## WASSUP_BE
+## 📌 프로젝트 기간
 
-성공회대학교 소프트웨어 캡스톤 디자인 프로젝트입니다.
+- `2024.03` ~ `2024.6`
 
 ## 📌 와썹 소개 
 
@@ -12,30 +13,8 @@
 - 관리자는 개인 또는 그룹별로 공지사항(가정통신문)을 작성할 수 있습니다.
 - 관리자는 그룹에 속한 인원들의 정보를 관리할 수 있습니다.
 
-## 📌 와썹 미리보기
-
-<img src="https://github.com/WASSUP-Project/WASSUP-Web/blob/main/images/wassup_main.png?raw=true" width="830" height="670">
-
-<img src="https://github.com/WASSUP-Project/WASSUP-Web/blob/main/images/wassup_group.png?raw=true" width="830" height="610">
-
-<img src="https://github.com/WASSUP-Project/WASSUP-Web/blob/main/images/wassup_pad.png?raw=true" width="830" height="780">
-
-<img src="https://github.com/WASSUP-Project/WASSUP-Web/raw/main/public/groupAttendance.png" width="830" height="600">
-
-<img src="https://github.com/WASSUP-Project/WASSUP-Web/blob/main/images/wassup_attendance.png?raw=true" width="830" height="610">
-
-<img src="https://github.com/WASSUP-Project/WASSUP-Web/raw/main/public/groupNotice.png" width="830" height="610">
-
-## 📌 프로젝트 기간
-
-- `2024.03` ~ `2024.6`
-
-## 📌 팀원
-
-|                                                        Yehyeok Bang                                                        |                                                       Jiyun Lee                                                        |
-|:--------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------:|
-| <a href="https://github.com/YehyeokBang"><img src="https://avatars.githubusercontent.com/u/107793780?v=4" width="170"></a> | <a href="https://github.com/dd-jiyun"><img src="https://avatars.githubusercontent.com/u/84395062?v=4" width="170"></a> |
-|                                                            Web                                                             |                                                         Server                                                         |
+## 📌 ERD
+![ERD](https://github.com/WASSUP-Project/WASSUP-Web/blob/main/images/wassup_erd.png?raw=true)
 
 ## 📌 프로젝트 구조
 
@@ -60,7 +39,8 @@
 - **Framework** : Spring Boot 3.2.3
 - **IDE** : IntelliJ IDEA
 - **Database** : MySQL
- 
+
+
 ## 📌 실행 방법
 
 ```
@@ -76,3 +56,10 @@ $ {환경변수키=값} java -jar WASSUP-0.0.1-SNAPSHOT.jar
 로컬에서 접속 : http://localhost:8080
 Swagger 접속 : http://localhost:8080/swagger-ui.html
 ```
+
+## 📌 팀원
+
+|                                                        Yehyeok Bang                                                        |                                                       Jiyun Lee                                                        |
+|:--------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------:|
+| <a href="https://github.com/YehyeokBang"><img src="https://avatars.githubusercontent.com/u/107793780?v=4" width="170"></a> | <a href="https://github.com/dd-jiyun"><img src="https://avatars.githubusercontent.com/u/84395062?v=4" width="170"></a> |
+|                                                            Web                                                             |                                                         Server                                                         |
